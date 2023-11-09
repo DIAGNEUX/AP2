@@ -1,0 +1,79 @@
+:root{
+    --color: #ffc800 ;
+}
+
+.Admin{
+    padding-top:70px ;
+
+}
+.Admin .sidebar{
+    width:250px;
+    height: calc(100vh - 70px);
+    background: #ffc800;
+}
+.Admin .sidebar ul li{
+    padding: 10px 15px;
+    font-size: 20px;
+    border-bottom: 1px solid black;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* overlay */
+
+.wrap-Overlay-add {
+    padding-top: 70px;
+    display: none;
+    
+}
+
+.Admin .Overlay-add form input{
+    display: block;
+    width: 400px;
+    height: 35px;
+}
+.Quiz .Quiz-form form input[type=submit]{
+    margin: 20px 0;
+    background-color: #ffc800;
+    outline: none;
+    border: none;
+}
+

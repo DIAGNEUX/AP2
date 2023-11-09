@@ -1,0 +1,172 @@
+:root{
+    --color: #ffc800 ;
+}
+.Homme{
+    width: 100%;
+    position: relative;
+    padding: 0 10px ;
+    padding-top: 75px;
+
+
+    
+}
+
+.Homme .Filtre {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.Homme .Filtre div{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid black;
+    padding: 8px 10px;
+}
+.Homme .Filtre div img{
+    width: 25px;
+    height: 25px;
+}
+.Homme .tag-homme{
+    margin: 5px 0;
+}
+.Homme .tag-homme ul{
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    list-style: none;
+}
+.Homme .tag-homme ul li{
+    display: inline-block;
+    margin: 5px 15px;
+    opacity: 0.8;
+    
+}
+.Homme .tag-homme ul li:first-child{
+    border-bottom: 2px solid black;
+    opacity: 1;
+}
+.Homme .wrap-lert-right{
+    display: flex;
+    width: 100%;
+    height: 600vh;
+}
+.Homme .wrap-lert-right .left-homme ,
+.Homme .wrap-lert-right .right-homme {
+    
+    padding: 10px;
+    
+    
+}
+.Homme .wrap-lert-right .left-homme{
+    width: 25%;
+    height: 100vh ;
+    border: 1px solid black;
+}
+.Homme .wrap-lert-right  .left-hommesticky {
+    width: 25%;
+    height: 100vh ;
+    border: 1px solid black;
+    position: sticky;
+    top: 80px;
+    left: 0;
+    right: 0;
+    padding: 10px;
+    
+
+}
+.left-hommesticky ul li:not(:last-child) ,
+.Homme .wrap-lert-right .left-homme ul li:not(:last-child){
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    list-style: none;
+    padding: 10px 5px;
+    width: 100%;
+    border: 1px solid black;
+    margin: 10px 0;
+    position: relative;
+
+}
+.left-hommesticky ul li:last-child ,
+.Homme .wrap-lert-right .left-homme ul li:last-child{
+    width: 100%;
+    height: 90px;
+    border: 1px solid black;
+    margin: 10px 0;
+    position: relative;
+    padding: 10px 5px;
+    list-style: none;
+
+}
+
+
+.left-hommesticky ul li img ,
+.Homme .wrap-lert-right .left-homme ul li img{
+    width: 20px ;
+    height: 20px;
+}
+
+.Homme .wrap-lert-right .right-homme{
+    width: 75%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+.Homme .wrap-lert-right .right-homme div{
+    border: 1px solid black;
+    width: 250px;
+    height: 250px;
+}
+
+
+.Homme .price-content{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+}
+
+.Homme label {
+   font-size: 12px;
+   font-weight: 500;
+}
+
+.price-content .p {
+   font-size: 16px;
+   font-weight: 600;
+}
+
+.range-slider {
+    margin-top: 10px;
+    width: 100%;
+}
+
+.Homme input[type=range] {
+    -webkit-appearance: none;
+    width: 100%;
+    background: transparent; 
+    position: absolute;
+    left: 0;
+    padding: 0 5px;
+}
+
+.Homme input[type=range]::-webkit-slider-thumb {
+   -webkit-appearance: none;
+    height: 15px;
+    width: 10px;
+    background: var(--color);
+    cursor: pointer;
+    margin-top: -5px;
+    position: relative;
+    z-index: 1;
+}
+
+.Homme input[type=range]::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 5px;
+    background: #e8e8e8;
+    border-radius: 3px;
+    border: none;
+}

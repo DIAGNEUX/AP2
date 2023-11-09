@@ -1,0 +1,98 @@
+:root{
+    --color: #ffc800 ;
+}
+.wrap-Produit-detail{
+    width: 100%;
+    padding-top: 75px;
+}
+.wrap-Produit-detail .Produit-detail .Produit-detail-flex{
+    display: flex;
+}
+
+.Produit-detail-flex .Produit-detail-left{
+    width: 60%;
+    position: relative;
+
+    
+}
+.Produit-detail-flex .Produit-detail-left .other-img img{
+    width: 90px;
+    height: 100px;
+    display: block;
+    margin: 6px 4px;
+
+     
+}
+.Produit-detail-flex .Produit-detail-left .display-img img{
+    width: 90%;
+    margin-left: 10px;
+    margin: 6px 4px;
+}
+.Produit-detail-left .in-detail-left{
+    display: flex;
+    justify-content: space-between;
+
+}
+
+.Produit-detail-flex .Produit-detail-right{
+    width: 40%;
+}
+
+.Produit-detail-right .couleur ul li{
+    width: 70px;
+    height: 80px;
+    border: 1px  solid black;
+    display: inline-block;
+    margin: 0 5px;
+}
+.Produit-detail-right .taille{
+    margin: 5px;
+    width: 400px;
+    position: relative;
+}
+.Produit-detail-right .taille ul li{
+    width: 70px;
+    height: 45px;
+    display: inline-block;
+    border: 1px solid ;
+    position: relative;
+    align-items: center;
+    flex-wrap: wrap;
+    margin: 5px;
+}
+.Produit-detail-right .taille ul li label{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.Produit-detail-right .taille ul li input{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+}
+
+.Produit-detail-right .add-fav{
+    width: 100%;
+    
+}
+.Produit-detail-right .add-fav button{
+    width: 90%;
+    margin: 5px 0;
+    outline: none;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 18px;
+    font-weight: bold;
+    font-size: 20px;
+    
+
+}
+.Produit-detail-right .add-fav button:first-child{
+    background-color: var(--color);
+}
+.Produit-detail-right h2  , .Produit-detail-right h4{
+    margin: 10px 0;
+}
