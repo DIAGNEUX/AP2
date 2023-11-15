@@ -493,3 +493,411 @@ Overlay add
         </form>
       </div>
       </div> */}
+
+
+      // app.put("/quiz/:id", (req, res) => {
+//     const { id } = req.params;
+//     const { theme, question, reponse } = req.body;
+//     const sql = "UPDATE questions SET theme = ?, question = ?, reponse = ? WHERE id = ?";
+  
+//     db.query(sql, [theme, question, reponse, id], (err, result) => {
+//       if (err) {
+//         return res.status(500).json({ message: "Erreur ", error: err });
+//       }
+//       res.status(200).json({ message: "Question modifiée " });
+//     });
+// }); 
+  
+  
+  
+  
+  
+  
+
+// app.delete("/quiz/:id", (req, res) => {
+//     const { id } = req.params; 
+//     const sql = "DELETE FROM questions WHERE id = ?";   
+//     db.query(sql, [id], (err, result) => {
+//       if (err) {
+//         return res.status(500).json({ message: "Erreur lors de la suppression de la question", error: err });
+//       }
+//       res.status(200).json({ message: "Question supprimée ", data: result });
+//     });
+//   });
+  
+
+
+
+
+
+
+important
+Front 
+import "../css/Admin.css";
+import add from '../Assets/icons/add.png';
+import { useState, useEffect } from 'react';
+import close from '../Assets/icons/close.png';
+import axios from 'axios';
+
+export const Admin = () => {
+  const localhost = "http://localhost:3001";
+  const [nom, setNom] = useState('');
+  const [description, setDescription] = useState('');
+  const [couleur, setCouleur] = useState('');
+  const [taille, setTaille] = useState('');
+  const [prix, setPrix] = useState('');
+  const [promo, setPromo] = useState('');
+  const [categorie, setCategorie] = useState('');
+  const [cateType, setCateType] = useState('');
+  const [images, setImages] = useState([]);
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [overlayVisible, setOverlayVisible] = useState(false);
+  const [produits, setProduits] = useState([]);
+
+  const API = "http://localhost:3001/produits";
+
+  useEffect(() => {
+    axios.get(API)
+      .then((res) => {
+        setProduits(res.data);
+      })
+      .catch((error) => {
+        console.error('Erreur lors de la récupération des données de l\'API :', error);
+      });
+  }, []);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const formData = new FormData();
+      formData.append('nomProduit', nom);
+      formData.append('description', description);
+      formData.append('prix', prix);
+      formData.append('categorie', categorie);
+      formData.append('promo', promo);
+      formData.append('cateType', cateType);
+      formData.append('couleur', couleur);
+      formData.append('taille', taille);
+
+
+      if (images.length > 0) {
+        formData.append('images', images[0]);
+      }
+
+      await axios.post(API, formData);
+      setOverlayVisible(false); 
+      window.location.reload()
+    } catch (error) {
+      console.error('Error :', error);
+    }
+  };
+
+  const handleDelete = async (productId) => {
+    try {
+      await axios.delete(`${API}/${productId}`);
+      setProduits((prevProducts) => prevProducts.filter((product) => product.id !== productId));
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
+
+  const handleEdit = (productId) => {
+    
+    const productToEdit = produits.find((product) => product.id === productId);
+  
+    
+    setNom(productToEdit.nomProduit || '');
+    setDescription(productToEdit.description || '');
+    setPrix(productToEdit.prix || '');
+    setCategorie(productToEdit.categorie || '');
+    setPromo(productToEdit.promo || '');
+    setCateType(productToEdit.cateType || '');
+    setCouleur(productToEdit.couleur || '');
+    setTaille(productToEdit.taille || '');
+
+    setEditingProduct(productToEdit);
+    setOverlayVisible(true);
+  };
+  
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+
+    try {
+
+      await axios.put(`${API}/${editingProduct.id}`, {
+        nomProduit: nom,
+        description,
+        prix,
+        categorie,
+        couleur,
+        taille,
+        promo,
+        cateType,
+      });
+
+      setProduits((prevProducts) =>
+        prevProducts.map((product) =>
+          product.id === editingProduct.id
+            ? { ...product, nomProduit: nom, description,prix, categorie, couleur, taille, promo, cateType }
+            : product
+        )
+      );
+
+      setOverlayVisible(false);
+      setEditingProduct(null);
+    } catch (error) {
+      console.error('Error updating product:', error);
+    }
+  };
+
+  return (
+    <div className="wrap-Admin">
+      <div className='Admin'>
+        <div className="sidebar">
+          <div>
+            <div className="logo"></div>
+            <ul>
+              <li>Tous les vêtements</li>
+              <li>Homme</li>
+              <li>Femme</li>
+              <li>Enfant</li>
+              <li>Accessoires</li>
+            </ul>
+          </div>
+        </div>
+        <div className="lesproduits">
+          <div className="table">
+            <div className="table-header">
+              <div className="header__item"><a id="name" className="filter__link" href="#">Id</a></div>
+              <div className="header__item"><a id="wins" className="filter__link filter__link--number" href="#">image</a></div>
+              <div className="header__item"><a id="draws" className="filter__link filter__link--number" href="#">nom</a></div>
+              <div className="header__item"><a id="losses" className="filter__link filter__link--number" href="#">Promo</a></div>
+              <div className="header__item"><a id="total" className="filter__link filter__link--number" href="#">prix</a></div>
+              <div className="header__item"><a id="total" className="filter__link filter__link--number" href="#"></a></div>
+            </div>
+            <div className="table-content">
+              {produits.map((unproduit, index) => (
+                <div className="table-row" key={index}>
+                  <div className="table-data">#{unproduit.id}</div>
+                  <div className="table-data">
+                    {unproduit.images && unproduit.images.length > 0 ? (
+                      <img src={`${localhost}/uploads/${unproduit.images.split(',')[0]}`} alt="" />
+                    ) : (
+                      <img src={`${localhost}/uploads/default-image.jpg`} alt="Default" />
+                    )}
+                  </div>
+                  <div className="table-data">{unproduit.nomProduit}</div>
+                  <div className="table-data">{unproduit.promo}</div>
+                  <div className="table-data">{unproduit.prix}.00 €</div>
+                  <div className="table-data">
+                    <button onClick={() => handleDelete(unproduit.id)}>Delete</button>
+                    <button onClick={() => handleEdit(unproduit.id)}>Modif</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="add-button" onClick={() => setOverlayVisible(true)}>
+        <img src={add} alt="" />
+      </div>
+      <div>
+        {overlayVisible && (
+          <div className="wrap-Overlay-add">
+            <div className="Overlay-add">
+              <h1>{editingProduct ? 'Modifier le produit' : 'Ajouter un produit'}</h1>
+              <form onSubmit={editingProduct ? handleUpdate : handleSubmit}>
+                <div className="flex-form">
+                  <div>
+                    <label htmlFor="nomProduit">Nom</label>
+                    <input
+                      type="text"
+                      value={nom}
+                      onChange={(e) => setNom(e.target.value)}
+                    />
+                    <label htmlFor="description">Description</label>
+                    <input
+                      type="text"
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                    />
+                    <label htmlFor="prix">Prix</label>
+                    <input
+                      type="text"
+                      value={prix}
+                      onChange={(e) => setPrix(e.target.value)}
+                    />
+                    <label htmlFor="categorie">Catégorie</label>
+                    <input
+                      type="text"
+                      value={categorie}
+                      onChange={(e) => setCategorie(e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="promo">Promo</label>
+                    <input
+                      type="text"
+                      value={promo}
+                      onChange={(e) => setPromo(e.target.value)}
+                    />
+                    <label htmlFor="cateType">CatégorieType</label>
+                    <input
+                      type="text"
+                      value={cateType}
+                      onChange={(e) => setCateType(e.target.value)}
+                    />
+                    <label htmlFor="couleur">Couleur</label>
+                    <input
+                      type="text"
+                      value={couleur}
+                      onChange={(e) => setCouleur(e.target.value)}
+                    />
+                    <label htmlFor="images">Images</label>
+                    <input type="file" id="images" onChange={(e) => setImages(e.target.files)} multiple />
+                    <label htmlFor="taille">Taille</label>
+                    <input
+                      type="text"
+                      value={taille}
+                      onChange={(e) => setTaille(e.target.value)}
+                    />
+                  </div>
+                </div>
+                <div className="center-submit">
+                  <input type="submit" value="Submit" />
+                </div>
+              </form>
+              <div className="close-me">
+                <button onClick={() => setOverlayVisible(false)}><img src={close} alt="" /></button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+
+Back
+const express = require('express');
+const app = express();
+const port = 3001;
+const db = require('./dbb/connexion');
+const cors = require('cors');
+const multer = require('multer');
+
+app.use(express.json());
+app.use(cors());
+
+app.use('/uploads', express.static('../sport/uploads'));
+
+
+
+const fileFilter = (req, file, callback) => {
+  if (file.mimetype.startsWith('image/')) {
+    callback(null, true);
+  } else {
+    callback(new Error('upload une image.'), false);
+  }
+};
+
+const storage = multer.diskStorage({
+  destination: (req, file, callback) => {
+    callback(null, '../sport/uploads');
+  },
+  filename: (req, file, callback) => {
+    callback(null, `image-${Date.now()}-${file.originalname}`);
+  },
+});
+
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: fileFilter, 
+});
+
+app.get('/produits', (req, res) => {
+  const sql = 'SELECT * FROM produits';
+  db.query(sql, (err, data) => {
+    if (err) return res.status(500).json(err);
+    return res.json(data);
+  });
+});
+app.get('/produits/:id', (req, res) => {
+  const productId = req.params.id;
+  const sql = 'SELECT * FROM produits WHERE id = ?';
+  db.query(sql, [productId], (err, data) => {
+    if (err) return res.status(500).json(err);
+    return res.json(data);
+  });
+});
+
+app.post('/produits', upload.array('images', 5), (req, res) => {
+  try {
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ error: 'No files uploaded.' });
+    }
+
+    const { nomProduit, description, categorie, couleur, taille, promo, cateType , prix } = req.body;
+    const imagePaths = req.files.map((file) => file.filename).join(',');
+
+    const sql = 'INSERT INTO produits (nomProduit, images, description, categorie, couleur, taille, promo, cateType , prix) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+    db.query(sql, [nomProduit, imagePaths, description, categorie, couleur, taille, promo, cateType, prix], (err, result) => {
+      if (err) {
+        console.error(err);
+        res.status(500).send('Erreur lors de l\'insertion ');
+      } else {
+        console.log(result);
+        res.status(200).send('Article ajouté avec succès !');
+      }
+    });
+  } catch (error) {
+    console.error('Error handling file upload:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+app.delete('/produits/:id', (req, res) => {
+  const productId = req.params.id;
+
+  const sql = 'DELETE FROM produits WHERE id = ?';
+  db.query(sql, [productId], (err, result) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send('Erreur lors de la suppression du produit.');
+    } else {
+      console.log(result);
+      res.status(200).send('Produit supprimé avec succès !');
+    }
+  });
+});
+
+
+app.put('/produits/:id', (req, res) => {
+  const productId = req.params.id;
+  const { nomProduit, description, categorie, couleur, taille, promo, cateType } = req.body;
+
+  const sql = 'UPDATE produits SET nomProduit=?, description=?, categorie=?, couleur=?, taille=?, promo=?, cateType=? WHERE id=?';
+  db.query(sql, [nomProduit, description, categorie, couleur, taille, promo, cateType, productId], (err, result) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send('Erreur lors de la mise à jour du produit.');
+    } else {
+      console.log(result);
+      res.status(200).send('Produit mis à jour avec succès !');
+    }
+  });
+});
+
+
+
+
+app.listen(port, () => {
+  console.log(`Server listening on port ${port}`);
+});
+
+

@@ -49,7 +49,6 @@
 .Homme .wrap-lert-right{
     display: flex;
     width: 100%;
-    height: 600vh;
 }
 .Homme .wrap-lert-right .left-homme ,
 .Homme .wrap-lert-right .right-homme {
@@ -106,17 +105,28 @@
     width: 20px ;
     height: 20px;
 }
-
-.Homme .wrap-lert-right .right-homme{
+.Homme .wrap-lert-right .wrap-right-homme{
     width: 75%;
+    position: relative;
+}
+.Homme .wrap-lert-right .right-homme{
+    width: 100%;
     display: flex;
     flex-wrap: wrap;
     justify-content: space-around;
 }
-.Homme .wrap-lert-right .right-homme div{
-    border: 1px solid black;
-    width: 250px;
-    height: 250px;
+.Homme .wrap-lert-right .right-homme .elem-produit-homme{
+    border: 1px solid grey;
+    width: 280px;
+    height: 340px;
+    position: relative;
+    margin: 10px;
+    padding: 5px;
+}
+.Homme .wrap-lert-right .right-homme .elem-produit-homme img{
+    width: 100%;
+    height: 70%;
+    object-fit: cover;
 }
 
 
@@ -169,4 +179,25 @@
     background: #e8e8e8;
     border-radius: 3px;
     border: none;
+}
+.right-homme .elem-produit-homme .PrixAvant{
+    text-decoration: line-through;
+    color: grey;
+}
+.right-homme .elem-produit-homme .reduction{
+    color: green;
+    font-weight: bold;
+}
+.right-homme .elem-produit-homme .prixMaintenant , 
+.right-homme .elem-produit-homme .prix{
+    font-weight: bold;
+    opacity: 0.7;
+    margin: 4px 0;
+
+}
+.right-homme .elem-produit-homme .wrap-Avant-Maintenant{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    margin: 5px 0;
 }

@@ -10,6 +10,7 @@ import Connexion from '../component/Connexion'
 import { Produit } from '../component/Produit'
 import ScrollToTop from '../component/ScroolTop'
 import { Admin } from '../Pages/Admin'
+import { ProduitDetails } from '../component/ProduitDetails'
 
 export const Way = () => {
   return (
@@ -25,6 +26,7 @@ export const Way = () => {
           <Route path="/Promo" element={<Promo/>} />
           <Route path="/Connexion" element={<Connexion/>} />
           <Route path="/Produit/:nom/:id" element={<Produit/>} />
+          <Route path="/ProduitDetails/:nomProduit/:id" element={<ProduitDetails/>} />
           <Route path="/Admin" element={<Admin/>} />
         </Routes>
     </div>

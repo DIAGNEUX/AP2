@@ -1,14 +1,31 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import Filtre from '../Assets/icons/Filtre.png';
 import Trier from '../Assets/icons/Trier.png';
 import plus from '../Assets/icons/plus.png';
 import moins from '../Assets/icons/moins.png';
 import '../css/Homme.css';
+import { Link } from 'react-router-dom';
 
 export const Femme = () => {
   const [StickyLeft, setStickyLeft] = useState(false);
   const [minPrice, setMinPrice] = useState(10);
   const [maxPrice, setMaxPrice] = useState(500);
+  const [HommeProduit , setHommeProduit]=useState([])
+  const API = "http://localhost:3001/produits/femme";
+  const localhost = "http://localhost:3001"
+
+  useEffect(() => {
+    axios.get(API)
+      .then((res) => {
+        setHommeProduit(res.data);
+      })
+      .catch((error) => {
+        console.error('Erreur lors de la récupération des données de l\'API :', error);
+      });
+  }, []);
+
+
 
   const handleStickyLeft = () => {
     if (window.pageYOffset > 50) {
@@ -51,7 +68,7 @@ export const Femme = () => {
 
   return (
     <div className='Homme'>
-      <h1>Vêtements pour Femmme (nbr)</h1>
+      <h1>Vêtements pour homme (nbr)</h1>
       <div className='Filtre'>
         <div>
           <img src={Filtre} alt="" />Filtre
@@ -116,10 +133,33 @@ export const Femme = () => {
             </ul>
           </div>
         </div>
-        <div className='right-homme'>
-          <div></div>
-          <div></div>
-          <div></div>
+        <div className='wrap-right-homme'>
+          <div className='right-homme'>
+            
+          {HommeProduit.map((unproduitHomme , index)=> (
+          <div className='elem-produit-homme'>
+            <Link to={`/ProduitDetails/${unproduitHomme.nomProduit}/${unproduitHomme.id}`}>
+            {unproduitHomme .images && unproduitHomme .images.length > 0 ? (
+              <img src={`${localhost}/uploads/${unproduitHomme.images.split(',')[unproduitHomme.images.split(',').length - 1]}`} alt="" />
+            ) : (
+              <img src={`${localhost}/uploads/default-image.jpg`} alt="Default" />
+            )}
+            <h4>{unproduitHomme.nomProduit}</h4>
+            {unproduitHomme.promo == 0 ?(
+              <p className='prix'>{unproduitHomme.prix}.00 €</p>
+            ):(
+              <>
+              <div className='wrap-Avant-Maintenant'>
+              <p className='prixMaintenant'>{(unproduitHomme.prix - (unproduitHomme.prix * unproduitHomme.promo) / 100).toFixed(2)} €</p>
+              <p className='PrixAvant'>{unproduitHomme.prix}.00 €</p>         
+              </div>
+              <p className='reduction' >{unproduitHomme.promo}% de réduction</p>
+              </>
+            )}
+            </Link>
+          </div>
+          ))}
+          </div>
         </div>
       </div>
     </div>

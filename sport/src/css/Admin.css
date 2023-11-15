@@ -87,14 +87,15 @@
     position: fixed;
     bottom: 5px;
     right: 5px;
+    
 }
-.add-button img{
+.wrap-Admin .add-button img{
     width: 50px;
     height: 50px;
 }
 
 
-.wrap-Overlay-add {
+.wrap-Admin .wrap-Overlay-add {
     padding-top: 70px;
     position: fixed;
     top: 0;
@@ -109,7 +110,7 @@
     
 }
 
-.Overlay-add {
+.wrap-Admin .Overlay-add {
     position: relative;
     width: 80%;
     height: 80%;
@@ -121,19 +122,19 @@
 }
 
 
-.Overlay-add form input {
+.wrap-Admin .Overlay-add form input {
     display: block;
     width:400px;
     height: 35px;
     margin-bottom: 15px;
 }
-.Overlay-add form  .center-submit{
+.wrap-Admin .Overlay-add form  .center-submit{
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
 }
-.Overlay-add form input[type=submit] {
+.wrap-Admin .Overlay-add form input[type=submit] {
     margin: 20px 0;
     background-color: #ffc800;
     outline: none;
@@ -142,12 +143,12 @@
     align-items: center;
     text-align: center;
 }
-.Overlay-add .close-me{
+.wrap-Admin .Overlay-add .close-me{
     position: absolute;
     top: -30px;
     right: -30px
 }
-.Overlay-add .close-me button{
+.wrap-Admin .Overlay-add .close-me button{
     outline: none;
     background: white;
     border: 50%;
@@ -157,13 +158,14 @@
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); 
     border-radius: 50%;
 }
-.Overlay-add .close-me button img{
+.wrap-Admin .Overlay-add .close-me button img{
     width: 30px;
     height: 30px;
+    cursor: pointer;
 }
 
 
-.flex-form{
+.wrap-Admin .flex-form{
     display: flex;
     align-items: center;
     justify-content: space-around;

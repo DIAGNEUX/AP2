@@ -1,60 +1,152 @@
 const express = require('express');
 const app = express();
 const port = 3001;
-app.use(express.json())
-const db = require('./dbb/connexion')
-const cors = require('cors')
-app.use(cors())
+const db = require('./dbb/connexion');
+const cors = require('cors');
+const multer = require('multer');
+
+app.use(express.json());
+app.use(cors());
+
+app.use('/uploads', express.static('../sport/uploads'));
 
 
-app.get("/produits", (req, res) => {
-    const sql = "SELECT * FROM questions";
-    db.query(sql, (err, data) => {
-      if (err) return res.status(500).json(err);
-      return res.json(data);
-    });
-  });
-  app.post("/produits", (req, res) => {
-    const { theme, question, reponse } = req.body;
-    const sql = "INSERT INTO questions (theme, question, reponse) VALUES (?, ?, ?)";
-    db.query(sql, [theme, question, reponse], (err, result) => {
-      if (err) {
-        return res.status(500).json({ message: "Erreur", error: err });
-      }
-      res.status(200).json({ message: "Question ajoutée ", data: result });
-    });
+
+const fileFilter = (req, file, callback) => {
+  if (file.mimetype.startsWith('image/')) {
+    callback(null, true);
+  } else {
+    callback(new Error('upload une image.'), false);
+  }
+};
+
+const storage = multer.diskStorage({
+  destination: (req, file, callback) => {
+    callback(null, '../sport/uploads');
+  },
+  filename: (req, file, callback) => {
+    callback(null, `image-${Date.now()}-${file.originalname}`);
+  },
 });
 
-// app.put("/quiz/:id", (req, res) => {
-//     const { id } = req.params;
-//     const { theme, question, reponse } = req.body;
-//     const sql = "UPDATE questions SET theme = ?, question = ?, reponse = ? WHERE id = ?";
-  
-//     db.query(sql, [theme, question, reponse, id], (err, result) => {
-//       if (err) {
-//         return res.status(500).json({ message: "Erreur ", error: err });
-//       }
-//       res.status(200).json({ message: "Question modifiée " });
-//     });
-// }); 
-  
-  
-  
-  
-  
-  
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: fileFilter, 
+});
 
-// app.delete("/quiz/:id", (req, res) => {
-//     const { id } = req.params; 
-//     const sql = "DELETE FROM questions WHERE id = ?";   
-//     db.query(sql, [id], (err, result) => {
-//       if (err) {
-//         return res.status(500).json({ message: "Erreur lors de la suppression de la question", error: err });
-//       }
-//       res.status(200).json({ message: "Question supprimée ", data: result });
-//     });
-//   });
-  
+app.get('/produits', (req, res) => {
+  const sql = 'SELECT * FROM produits';
+  db.query(sql, (err, data) => {
+    if (err) return res.status(500).json(err);
+    return res.json(data);
+  });
+});
+app.get('/produits/homme', (req, res) => {
+  const sql = 'SELECT * FROM produits WHERE categorie = "Homme"';
+  db.query(sql, (err, data) => {
+    if (err) return res.status(500).json(err);
+    return res.json(data);
+  });
+});
+app.get('/produits/meme', (req, res) => {
+  const nomProduit = req.query.nomProduit;
+  const sql = `SELECT * FROM produits WHERE  nomProduit = ?`;
+  db.query(sql, [nomProduit], (err, data) => {
+    if (err) {
+      console.error('Error executing SQL query:', err);
+      return res.status(500).json(err);
+    }
+
+    console.log('Query result:', data);
+    return res.json(data);
+  });
+});
+app.get('/produits/femme', (req, res) => {
+  const sql = 'SELECT * FROM produits WHERE categorie = "Femme"';
+  db.query(sql, (err, data) => {
+    if (err) return res.status(500).json(err);
+    return res.json(data);
+  });
+});
+app.get('/produits/enfant', (req, res) => {
+  const sql = 'SELECT * FROM produits WHERE categorie = "Enfant"';
+  db.query(sql, (err, data) => {
+    if (err) return res.status(500).json(err);
+    return res.json(data);
+  });
+});
+app.get('/produits/:id', (req, res) => {
+  const productId = req.params.id;
+  const sql = 'SELECT * FROM produits WHERE id = ?';
+  db.query(sql, [productId], (err, data) => {
+    if (err) return res.status(500).json(err);
+    return res.json(data);
+  });
+});
+
+app.post('/produits', upload.array('images', 5), (req, res) => {
+  try {
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ error: 'No files uploaded.' });
+    }
+
+    const { nomProduit, description, categorie, couleur, taille, promo, cateType , prix } = req.body;
+    const imagePaths = req.files.map((file) => file.filename).join(',');
+
+    const sql = 'INSERT INTO produits (nomProduit, images, description, categorie, couleur, taille, promo, cateType , prix) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+    db.query(sql, [nomProduit, imagePaths, description, categorie, couleur, taille, promo, cateType, prix], (err, result) => {
+      if (err) {
+        console.error(err);
+        res.status(500).send('Erreur lors de l\'insertion ');
+      } else {
+        console.log(result);
+        res.status(200).send('Article ajouté avec succès !');
+      }
+    });
+  } catch (error) {
+    console.error('Error handling file upload:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+app.delete('/produits/:id', (req, res) => {
+  const productId = req.params.id;
+
+  const sql = 'DELETE FROM produits WHERE id = ?';
+  db.query(sql, [productId], (err, result) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send('Erreur lors de la suppression du produit.');
+    } else {
+      console.log(result);
+      res.status(200).send('Produit supprimé avec succès !');
+    }
+  });
+});
+
+
+app.put('/produits/:id', (req, res) => {
+  const productId = req.params.id;
+  const { nomProduit, description, categorie, couleur, taille, promo, cateType } = req.body;
+
+  const sql = 'UPDATE produits SET nomProduit=?, description=?, categorie=?, couleur=?, taille=?, promo=?, cateType=? WHERE id=?';
+  db.query(sql, [nomProduit, description, categorie, couleur, taille, promo, cateType, productId], (err, result) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send('Erreur lors de la mise à jour du produit.');
+    } else {
+      console.log(result);
+      res.status(200).send('Produit mis à jour avec succès !');
+    }
+  });
+});
+
+
+
+
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`);
 });
+
+
