@@ -113,7 +113,6 @@
     width: 100%;
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-around;
 }
 .Homme .wrap-lert-right .right-homme .elem-produit-homme{
     border: 1px solid grey;

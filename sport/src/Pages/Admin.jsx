@@ -151,7 +151,7 @@ export const Admin = () => {
                   <div className="table-data">#{unproduit.id}</div>
                   <div className="table-data">
                   {unproduit.images && unproduit.images.length > 0 ? (
-                    <img src={`${localhost}/uploads/${unproduit.images.split(',')[unproduit.images.split(',').length - 1]}`} alt="" />
+                     <img src={`${localhost}/uploads/${unproduit.images.split(',')[0]}`} alt="" />
                   ) : (
                     <img src={`${localhost}/uploads/default-image.jpg`} alt="Default" />
                   )}

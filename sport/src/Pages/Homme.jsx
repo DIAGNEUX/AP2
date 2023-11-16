@@ -140,7 +140,7 @@ export const Homme = () => {
           <div className='elem-produit-homme'>
             <Link to={`/ProduitDetails/${unproduitHomme.nomProduit}/${unproduitHomme.id}`}>
             {unproduitHomme .images && unproduitHomme .images.length > 0 ? (
-              <img src={`${localhost}/uploads/${unproduitHomme.images.split(',')[unproduitHomme.images.split(',').length - 1]}`} alt="" />
+              <img src={`${localhost}/uploads/${unproduitHomme.images.split(',')[0]}`} alt="" />
             ) : (
               <img src={`${localhost}/uploads/default-image.jpg`} alt="Default" />
             )}

@@ -128,10 +128,10 @@ app.delete('/produits/:id', (req, res) => {
 
 app.put('/produits/:id', (req, res) => {
   const productId = req.params.id;
-  const { nomProduit, description, categorie, couleur, taille, promo, cateType } = req.body;
+  const { nomProduit, description, categorie, couleur, taille, promo, cateType, prix } = req.body;
 
-  const sql = 'UPDATE produits SET nomProduit=?, description=?, categorie=?, couleur=?, taille=?, promo=?, cateType=? WHERE id=?';
-  db.query(sql, [nomProduit, description, categorie, couleur, taille, promo, cateType, productId], (err, result) => {
+  const sql = 'UPDATE produits SET nomProduit=?, description=?, categorie=?, couleur=?, taille=?, promo=?, cateType=?, prix=? WHERE id=?';
+  db.query(sql, [nomProduit, description, categorie, couleur, taille, promo, cateType, prix, productId], (err, result) => {
     if (err) {
       console.error(err);
       res.status(500).send('Erreur lors de la mise à jour du produit.');
@@ -141,6 +141,7 @@ app.put('/produits/:id', (req, res) => {
     }
   });
 });
+
 
 
 
