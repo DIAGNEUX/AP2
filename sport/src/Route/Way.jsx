@@ -11,6 +11,8 @@ import { Produit } from '../component/Produit'
 import ScrollToTop from '../component/ScroolTop'
 import { Admin } from '../Pages/Admin'
 import { ProduitDetails } from '../component/ProduitDetails'
+import Panier from '../component/Panier'
+import { Essai } from '../Pages/Essai'
 
 export const Way = () => {
   return (
@@ -28,6 +30,8 @@ export const Way = () => {
           <Route path="/Produit/:nom/:id" element={<Produit/>} />
           <Route path="/ProduitDetails/:nomProduit/:id" element={<ProduitDetails/>} />
           <Route path="/Admin" element={<Admin/>} />
+          <Route path="/Panier" element={<Panier/>} />
+          <Route path="/Essai" element={<Essai/>} />
         </Routes>
     </div>
   )

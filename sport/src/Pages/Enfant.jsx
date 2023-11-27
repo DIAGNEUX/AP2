@@ -4,6 +4,8 @@ import Filtre from '../Assets/icons/Filtre.png';
 import Trier from '../Assets/icons/Trier.png';
 import plus from '../Assets/icons/plus.png';
 import moins from '../Assets/icons/moins.png';
+import panier from '../Assets/icons/bag.png'
+import like from '../Assets/icons/like_icons.png'
 import '../css/Homme.css';
 import { Link } from 'react-router-dom';
 
@@ -68,7 +70,20 @@ export const Enfant = () => {
 
   return (
     <div className='Homme'>
-      <h1>Vêtements pour homme (nbr)</h1>
+      <div className='vetements-section'>
+        <div>
+      <h1>Vêtements pour Enfant </h1>
+      <div>
+        <ul>
+          <li>Vetements</li>
+          <li>Chaussure</li>
+          <li>Short</li>
+          <li>Pantalon</li>
+          <li>Accessoire</li>
+        </ul>
+        </div>
+      </div>
+      </div>
       <div className='Filtre'>
         <div>
           <img src={Filtre} alt="" />Filtre
@@ -77,15 +92,7 @@ export const Enfant = () => {
           <img src={Trier} alt="" />Trier par
         </div>
       </div>
-      <div className="tag-homme">
-        <ul>
-          <li>Tous les Vêtements</li>
-          <li>Vêtements</li>
-          <li>Short</li>
-          <li>Pantalon</li>
-          <li>Chaussure</li>
-        </ul>
-      </div>
+     
 
       <div className="wrap-lert-right">
         <div className={`left-homme${StickyLeft ? "sticky" : ""} `}>
@@ -138,6 +145,15 @@ export const Enfant = () => {
             
           {HommeProduit.map((unproduitHomme , index)=> (
           <div className='elem-produit-homme'>
+            <div className='image-icon-produit'>
+              <div>
+            <img className='like'src={like} alt="" />
+            </div>
+            <div>
+            <img className='panier' src={panier} alt="" />
+            </div>
+            </div>
+            <div className='in-elem-produit-homme'>
             <Link to={`/ProduitDetails/${unproduitHomme.nomProduit}/${unproduitHomme.id}`}>
             {unproduitHomme .images && unproduitHomme .images.length > 0 ? (
               <img src={`${localhost}/uploads/${unproduitHomme.images.split(',')[0]}`} alt="" />
@@ -157,6 +173,7 @@ export const Enfant = () => {
               </>
             )}
             </Link>
+            </div>
           </div>
           ))}
           </div>

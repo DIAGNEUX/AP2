@@ -10,11 +10,43 @@
 
     
 }
+.Homme .vetements-section{
+    width: 100%;
+    height: 150px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    background-color: rgb(236, 236, 236);
+    color: white;
+    position: relative;
 
+}
+
+.Homme .vetements-section h1{
+    margin-left: 20px;
+}
+.Homme .vetements-section ul{
+    display: flex;
+    align-items: center;
+    width: 100%;
+    margin: 20px 0;
+    color: white;
+}
+.Homme .vetements-section ul li{
+    display: inline-block;
+    margin: 0 10px;
+    padding: 10px 15px;
+    border: 1px solid black;
+    background-color: #fffff0;
+}
+.Homme .vetements-section ul li:hover{
+    background-color: var(--color);
+}
 .Homme .Filtre {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    margin-bottom: 20px ;
 }
 .Homme .Filtre div{
     display: flex;
@@ -115,20 +147,43 @@
     flex-wrap: wrap;
 }
 .Homme .wrap-lert-right .right-homme .elem-produit-homme{
-    border: 1px solid grey;
-    width: 280px;
-    height: 340px;
+    width: 284px;
+    height: 380px;
     position: relative;
     margin: 10px;
-    padding: 5px;
 }
-.Homme .wrap-lert-right .right-homme .elem-produit-homme img{
+.Homme .wrap-lert-right .right-homme .elem-produit-homme .in-elem-produit-homme img{
     width: 100%;
-    height: 70%;
+    height: 280px;
     object-fit: cover;
 }
 
-
+.image-icon-produit{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: absolute;
+}
+.image-icon-produit .panier ,.image-icon-produit .like{
+    width: 23px;
+    height: 23px;
+}
+.image-icon-produit div{
+    width: 35px;
+    height: 35px;
+    background-color: #fffff0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 3px;
+}
+.image-icon-produit div:last-child{
+    z-index: 4;
+    animation: shadow 1.4s linear infinite alternate;
+    
+}
 .Homme .price-content{
     width: 100%;
     display: flex;

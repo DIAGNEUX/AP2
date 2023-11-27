@@ -1,11 +1,14 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
+import { useCart } from './Context';
 import "../css/Produit.css"
 import axios from 'axios'
 import { useEffect , useState } from 'react';
 import { Link } from 'react-router-dom';
 
+
 export const ProduitDetails = () => {
+    const { cart, addToCart } = useCart(); 
     const [HommeProduit , setHommeProduit]=useState([])
     const [ProduitsSimilaires, setProduitsSimilaires] = useState([]);
     const { nomProduit , id } = useParams();
@@ -42,9 +45,17 @@ export const ProduitDetails = () => {
             setHommeProduit(res.data);
           })
           .catch((error) => {
-            console.error('Erreur lors de la récupération des données de l\'API :', error);
+            console.error('Erreur  :', error);
           });
-      }, []);    
+      }, []); 
+      
+  
+ 
+  const handleAddToCart = () => {
+    if (produit) {
+      addToCart(produit); 
+    }
+  };   
  
   return (
     <div className='wrap-Produit-detail'>
@@ -105,8 +116,8 @@ export const ProduitDetails = () => {
           <ul>
           <li>
           {produit.taille && produit.taille.length > 0 ? (
-  produit.taille.split(',').map((size, index) => (
-    <div key={index} className="taille-item">
+           produit.taille.split(',').map((size, index) => (
+           <div key={index} className="taille-item">
          <label
                   htmlFor={size}
                   className={TailleSelect === size ? 'selected' : ''}
@@ -115,18 +126,17 @@ export const ProduitDetails = () => {
                   {size}
                   <input type="checkbox" id={size} name="size" />
                 </label>
-    </div>
-  ))
-) : (
-  <p></p>
-)}
- 
+              </div>
+               ))
+             ) : (
+               <p></p>
+             )}
               </li>
           </ul>
           </div>
           <div className="add-fav">
-            <button className='addPanier'>Ajouter au panier</button>
-            <button className='fav'>Ajouter au favoris</button>
+            <button className='addPanier' onClick={handleAddToCart}>Ajouter au panier</button>
+            <button className='fav' >Ajouter au favoris</button>
           </div>
           </div>
           </div>

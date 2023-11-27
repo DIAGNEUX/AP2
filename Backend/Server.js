@@ -36,19 +36,79 @@ const upload = multer({
 });
 
 app.get('/produits', (req, res) => {
-  const sql = 'SELECT * FROM produits';
+  const sql = 'SELECT * FROM produits ORDER BY id ASC';
+  db.query(sql, (err, data) => {
+    if (err) {
+      console.error('Erreur lors de la récupération des produits :', err);
+      return res.status(500).json(err);
+    }
+    return res.json(data);
+  });
+});
+app.get('/produits/bestSellers', (req, res) => {
+  const sql = 'SELECT * FROM produits WHERE best = "best" ORDER BY id DESC';
+  db.query(sql, (err, data) => {
+    if (err) {
+      console.error('Erreur lors de la récupération des produits :', err);
+      return res.status(500).json(err);
+    }
+    return res.json(data);
+  });
+});
+app.get('/produits/homme/vetements', (req, res) => {
+  const sql = 'SELECT * FROM produits WHERE categorie = "Homme" AND cateType= "vêtements"';
+  db.query(sql, (err, data) => {
+    if (err) {
+      console.error('Erreur lors de la récupération des produits :', err);
+      return res.status(500).json(err);
+    }
+    return res.json(data);
+  });
+});
+app.get('/produits/homme/chaussure', (req, res) => {
+  const sql = 'SELECT * FROM produits WHERE categorie = "Homme" AND cateType= "chaussure"';
+  db.query(sql, (err, data) => {
+    if (err) {
+      console.error('Erreur lors de la récupération des produits :', err);
+      return res.status(500).json(err);
+    }
+    return res.json(data);
+  });
+});
+app.get('/produits/femme/vetements', (req, res) => {
+  const sql = 'SELECT * FROM produits WHERE categorie = "Femme" AND cateType= "vêtements" ';
+  db.query(sql, (err, data) => {
+    if (err) {
+      console.error('Erreur lors de la récupération des produits :', err);
+      return res.status(500).json(err);
+    }
+    return res.json(data);
+  });
+});
+
+app.get('/produits/femme/chaussure', (req, res) => {
+  const sql = 'SELECT * FROM produits WHERE categorie = "Femme" AND cateType= "chaussure"';
   db.query(sql, (err, data) => {
     if (err) return res.status(500).json(err);
     return res.json(data);
   });
 });
-app.get('/produits/homme', (req, res) => {
-  const sql = 'SELECT * FROM produits WHERE categorie = "Homme"';
+app.get('/produits/enfant/chaussure', (req, res) => {
+  const sql = 'SELECT * FROM produits WHERE categorie = "Enfant" AND cateType= "chaussure"  ';
   db.query(sql, (err, data) => {
     if (err) return res.status(500).json(err);
     return res.json(data);
   });
 });
+
+app.get('/produits/enfant/chaussure', (req, res) => {
+  const sql = 'SELECT * FROM produits WHERE categorie = "Enfant" AND cateType= "chaussure" ';
+  db.query(sql, (err, data) => {
+    if (err) return res.status(500).json(err);
+    return res.json(data);
+  });
+});
+
 app.get('/produits/meme', (req, res) => {
   const nomProduit = req.query.nomProduit;
   const sql = `SELECT * FROM produits WHERE  nomProduit = ?`;
@@ -59,6 +119,14 @@ app.get('/produits/meme', (req, res) => {
     }
 
     console.log('Query result:', data);
+    return res.json(data);
+  });
+});
+
+app.get('/produits/homme', (req, res) => {
+  const sql = 'SELECT * FROM produits WHERE categorie = "Homme"';
+  db.query(sql, (err, data) => {
+    if (err) return res.status(500).json(err);
     return res.json(data);
   });
 });
@@ -125,19 +193,38 @@ app.delete('/produits/:id', (req, res) => {
   });
 });
 
-
-app.put('/produits/:id', (req, res) => {
+app.put('/produits/:id', upload.array('images', 5), (req, res) => {
   const productId = req.params.id;
   const { nomProduit, description, categorie, couleur, taille, promo, cateType, prix } = req.body;
+  let newImagePaths = [];
+  if (req.files && req.files.length > 0) {
+    newImagePaths = req.files.map((file) => file.filename);
+  }
+  const updateInfoSql = 'UPDATE produits SET nomProduit=?, description=?, categorie=?, couleur=?, taille=?, promo=?, cateType=?, prix=? WHERE id=?';
+  const updateInfoParams = [nomProduit, description, categorie, couleur, taille, promo, cateType, prix, productId];
 
-  const sql = 'UPDATE produits SET nomProduit=?, description=?, categorie=?, couleur=?, taille=?, promo=?, cateType=?, prix=? WHERE id=?';
-  db.query(sql, [nomProduit, description, categorie, couleur, taille, promo, cateType, prix, productId], (err, result) => {
-    if (err) {
-      console.error(err);
+  db.query(updateInfoSql, updateInfoParams, (infoErr, infoResult) => {
+    if (infoErr) {
+      console.error(infoErr);
       res.status(500).send('Erreur lors de la mise à jour du produit.');
     } else {
-      console.log(result);
-      res.status(200).send('Produit mis à jour avec succès !');
+      if (newImagePaths.length > 0) {
+        const updateImagesSql = 'UPDATE produits SET images=? WHERE id=?';
+        const updatedImagePaths = [...newImagePaths]; 
+
+        db.query(updateImagesSql, [updatedImagePaths.join(','), productId], (imageErr, imageResult) => {
+          if (imageErr) {
+            console.error(imageErr);
+            res.status(500).send('Erreur lors de la mise à jour des images du produit.');
+          } else {
+            console.log(imageResult);
+            res.status(200).send('Produit et images mis à jour avec succès !');
+          }
+        });
+      } else {
+        console.log(infoResult);
+        res.status(200).send('Produit mis à jour avec succès !');
+      }
     }
   });
 });

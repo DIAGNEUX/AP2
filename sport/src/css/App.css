@@ -76,8 +76,8 @@ a{
     justify-content: center;
     gap: 20px;
 }
-.Navbarsticky .wrap-con-btn img ,
-.Navbar .wrap-con-btn img{
+.Navbarsticky .wrap-con-btn .nav-icon img ,
+.Navbar .wrap-con-btn .nav-icon img{
     width: 25px ;
     height: 25px;
     margin: 0 3px;
@@ -105,19 +105,62 @@ a{
   top: 68px;
   right: 0;
   z-index: 99999999;
-  height: 400px;
-  width: 350px;
+  height: 450px;
+  width:  400px;
+  padding: 10px;
+  background-color: #f1f1f1;
 
 }
+.seepanier ul li , .seeLike ul li{
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 5px 0;
+}
+.seepanier ul li .elem-produit , .seeLike ul li .elem-produit{
+  width: 60%;
+}
+.seepanier .clearbtn , .seeLike .clearbtn{
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  bottom: 5px ;
 
-.wrap-Navbar .seepanier div img { 
+}
+.seepanier .clearbtn button , .seeLike .clearbtn button{
+  width: 80%;
+  padding: 10px 0;
+  font-size: 20px;
+  font-weight: bold;
+  background-color: var(--color);
+  border-radius: 20px;
+  outline: none;
+  border: none;
+}
+.seepanier .close-like-panier{
+  width: 10%;
+}
+.seepanier .close-like-panier img{
+  width: 22px;
+  height: 22px;
+
+}
+.seepanier .close-like-panier button{
+  outline: none;
+  border: none;
+  background-color: transparent;
+}
+.wrap-Navbar .seepanier div .paniertriangle { 
   position: absolute;
   top: -20px;
   right: 15px;
   height: 40px;
   width: 40px;
 }
-.wrap-Navbar .seeLike div img {
+.wrap-Navbar .seeLike div .liketriangle {
   position: absolute;
   top: -20px;
   right: 46px;
@@ -125,11 +168,10 @@ a{
   width: 40px;
 
 }
-.wrap-Navbar .seepanier div:last-child ,
-.wrap-Navbar .seeLike div:last-child
-{
-  background-color: #f1f1f1;
-  height: 350px;
+
+.wrap-Navbar .seepanier .img-cart{
+  width: 80px;
+  height: 100px;
 }
 
 
@@ -143,10 +185,51 @@ a{
     height: 100vh;
     position: relative;
 }
-.Accueil .content-acceuil .acceuil .right img{
-    width:  100%;
-    height: 100vh;
+
+.essai-images{
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
 }
+.essai-images .image1{
+  top: 50px;
+  left: 0;
+
+}
+.essai-images .image2{
+  top: 0;
+  left: 216px;
+}
+.essai-images .image3{
+  top: 50px;
+  right: 0;
+}
+.essai-images .image4{
+  top: 370px;
+  left: 0;
+}
+.essai-images .image5{
+  top: 300px;
+  left: 216px;
+  
+}
+.essai-images .image6{
+  top: 370px;
+  right: 0;
+  
+}
+
+.essai-images img {
+  height: 300px;
+  width: 200px;
+  position: absolute;
+  
+}
+
+
+
+
+
 .Accueil .content-acceuil .acceuil .left{
     width:100%;
     height: 100vh;
@@ -197,7 +280,7 @@ a{
 }
 
 .Accueil .Produits .Categories .card_categorie{
-    width: 300px;
+    width: 350px;
     height: 450px;
     border-radius: 10px;
     background-color:transparent;
@@ -208,34 +291,27 @@ a{
     height: 100%;
     border-radius: 10px;
 }
-.Accueil .Produits .Categories .card_categorie .par_cate{
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    background: rgba(255, 255, 255, 0.2);
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(2px);
-    -webkit-backdrop-filter: blur(5px);
-    opacity: 0;
-    transition: 0.5s;
-    padding: 20px;
+.Accueil .Produits .Categories .card_categorie button{
+  padding: 6px 12px;
+  background-color: #ffc800;
+  border-radius: 20px;
+  position: absolute;
+  bottom: 10px ;
+  right: 10px;
+  outline: none;
+  border: none;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
 }
-.Accueil .Produits .Categories .card_categorie:hover .par_cate {
-    opacity: 1;
+.Accueil .Produits .Categories .card_categorie button img{
+  width: 25px;
+  height: 25px;
+  margin-right: 3px;
+}
 
-}
-.Accueil .Produits .Categories .card_categorie .par_cate ul li{
-    background-color: #ffc800;
-    color: black;
-    margin: 10px 0;
-    font-size: 25px;
-    padding: 10px 20px;
-    list-style: none;
-    text-align: center;
-    cursor: pointer;
 
-}
+
 /* Promotion */
 
 /* populaire */
@@ -425,61 +501,38 @@ a{
     justify-content: center;
   }
   .type-sport {
-    width: 80%;
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr; /* Trois colonnes égales */
-    grid-auto-rows: minmax(220px, auto);
+    width: 95%;
     grid-gap: 10px;
     position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    
   } 
-  .type-sport div{
+  .collection{
+    width: 60%;
+    height: 450px;
+    border: 1px solid black;
+  }
+  .other-collection{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    height: 450px;;
+  }
+  .other-collection div{
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-  }
-  .type-sport div img{
-    width: 100%;
+    width: 240px;
     height: 220px;
+    border: 1px solid black;
+
   }
-  .type-sport div p{
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(63, 56, 4, 0.856);
-    font-size: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    color: white;
-  }
+
+ 
   
-  .one {
-    grid-column: 1 / 2; 
-  }
-  
-  .two {
-    grid-column: 2 / 4; 
-  }
-  
-  .three {
-    grid-column: 1;
-  }
-  
-  .four {
-    grid-column: 2;
-  }
-  
-  .five {
-    grid-column: 3;
-  }
-  
-  .type-sport div {
-    margin: 10px 0;
-  }
   
   
   /* Footer Styles */

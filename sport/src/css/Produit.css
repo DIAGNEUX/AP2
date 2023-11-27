@@ -24,8 +24,8 @@
 }
 .Produit-detail-flex .Produit-detail-left .display-img img{
     width: 100%;
-    height: 100vh;
-    object-fit: cover;
+    height: 120vh;
+
 
 }
 .Produit-detail-left .in-detail-left{

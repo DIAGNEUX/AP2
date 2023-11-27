@@ -3,13 +3,22 @@ import {Link} from 'react-router-dom'
 import Logo from "../Assets/logo2.png"
 import triangle from "../Assets/icons/triangle.png"
 import { Admin } from '../Pages/Admin'
+import { useCart } from '../component/Context'
+import likeIcon from '../Assets/icons/like_icons.png'
+import close from '../Assets/icons/close.png'
+import { Panier } from './Panier'
+import { Essai } from '../Pages/Essai'
+
+
 import {
   like , bag
 } from '../importation/Import'
  const Navbar = () => {
+  const { cart, removeFromCart, clearCart } = useCart();
   const [sticky , setSticky]= useState(false)
   const [showPanier, setShowPanier] = useState(false);
   const [showLike , setShowLike ] = useState(false)
+  const localhost = "http://localhost:3001"
 
   const handleScroll = () => {
     if(window.pageYOffset > 90){
@@ -56,6 +65,9 @@ import {
   const handleSeeLikeMouseLeave = () => {
     setShowLike(false);
   }
+
+
+  
   return (
     <div className="wrap-Navbar">
     <div className={`Navbar${sticky ? 'sticky' : '' }` }>
@@ -71,11 +83,13 @@ import {
             <li><Link to="/Accesoires">Accesoires</Link></li>
             <li><Link to="/Promo">Promo</Link></li>
             <li><Link to="/Admin">Admin</Link></li>
+            <li><Link to="/Essai">Essai</Link></li>
             
         </ul>
         <div className='wrap-con-btn'>
         <button><Link to="/Connexion">Se connecter</Link></button>
         <div className='nav-icon'>
+
           <img className='like-nav' src={like} alt="" 
           onMouseEnter={handleLikeHover} 
           onMouseLeave={handleLikeLeave}
@@ -83,6 +97,7 @@ import {
           <img className='Panier-nav' src={bag} alt=""
           onMouseEnter={handlePanierHover} 
           onMouseLeave={handlePanierLeave} />
+          <span className='cart-count'>{cart.length}</span>
         </div>
         </div>
         
@@ -91,8 +106,38 @@ import {
         <div className='seepanier' 
         onMouseEnter={handleSeepanierMouseEnter}
         onMouseLeave={handleSeepanierMouseLeave}>
-          <div><img src={triangle} alt="" /></div>
-          <div><h1>j'arrive Favoris</h1></div>
+          <div><img className='paniertriangle' src={triangle} alt="" /></div>
+          <div>
+            <ul>
+            {cart.map((item, index) => (
+              <>
+                <li key={index}>
+                  {item .images && item .images.length > 0 ? (
+                  <img className='img-cart' src={`${localhost}/uploads/${item.images.split(',')[0]}`} alt="" />
+                  ) : (
+                  <img className='img-cart' src={`${localhost}/uploads/default-image.jpg`} alt="Default" />
+                  )}
+                  <div className='elem-produit'>
+                  <h4>{item.nomProduit}</h4>
+                  <p> Taille:XS</p>
+                  <p>{item.prix}.00 €</p>
+                  </div>
+                  <div className='close-like-panier'>
+                  <button onClick={() => removeFromCart(item.id)}><img src={close} alt="" /></button>
+                  <button><img src={like} alt="" /></button>
+                  </div>
+                </li>
+                <hr />
+                </>
+              ))}
+              <div className='clearbtn'>
+                
+                <button ><Link to='/Panier'>Voir le panier</Link></button>
+                
+                </div>
+              
+      </ul>
+            </div>
         </div>
       )}
 
@@ -100,9 +145,9 @@ import {
               <div className='seeLike' 
               onMouseEnter={handleSeeLikeMouseEnter}
               onMouseLeave={handleSeeLikeMouseLeave}>
-                <div><img src={triangle} alt="" /></div>
+                <div><img className='liketriangle' src={triangle} alt="" /></div>
                 <div>
-                  <h1>j'arrive Panier</h1>
+                  <h1>j'arrive Favoris</h1>
                 </div>
               </div>
             )}

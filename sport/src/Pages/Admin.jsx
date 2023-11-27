@@ -88,23 +88,31 @@ export const Admin = () => {
     setEditingProduct(productToEdit);
     setOverlayVisible(true);
   };
+  
 
   const handleUpdate = async (e) => {
     e.preventDefault();
-
+  
     try {
-
-      await axios.put(`${API}/${editingProduct.id}`, {
-        nomProduit: nom,
-        description,
-        prix,
-        categorie,
-        couleur,
-        taille,
-        promo,
-        cateType,
-      });
-
+      const formData = new FormData();
+      formData.append('nomProduit', nom);
+      formData.append('description', description);
+      formData.append('prix', prix);
+      formData.append('categorie', categorie);
+      formData.append('promo', promo);
+      formData.append('cateType', cateType);
+      formData.append('couleur', couleur);
+      formData.append('taille', taille);
+  
+      if (images.length > 0) {
+        images.forEach((image) => {
+          formData.append('images', image);
+        });
+      }
+  
+      await axios.put(`${API}/${editingProduct.id}`, formData);
+  
+      // Mettre à jour localement les produits affichés si nécessaire
       setProduits((prevProducts) =>
         prevProducts.map((product) =>
           product.id === editingProduct.id
@@ -112,13 +120,15 @@ export const Admin = () => {
             : product
         )
       );
-
+  
+      // Fermer la fenêtre de modification après la mise à jour
       setOverlayVisible(false);
       setEditingProduct(null);
     } catch (error) {
       console.error('Error updating product:', error);
     }
   };
+  
 
   return (
     <div className="wrap-Admin">

@@ -1,15 +1,44 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom';
+import axios from 'axios';
+import { motion } from 'framer-motion';
 import { 
   leftbg, man, woman, child,
   Data, Back, Forward, bag, like,
   baniere, running, basket, football,
   tennis, training ,Produit
 } from '../importation/Import';
+import up_right from "../Assets/up-right.png"
+import image1 from "../Assets/imagedec1.png"
+import image2 from "../Assets/imagedec2.png"
+import image3 from "../Assets/imagedec3.png"
+import image4 from "../Assets/imagedec4.png"
+import image5 from "../Assets/imagedec5.png"
+import image6 from "../Assets/imagedec6.png"
+
+
 
 
 
 export const Accueil = () => {
+  const [bestSellers , setBestSellers] = useState([])
+  const API = "http://localhost:3001/produits/bestSellers";
+  const localhost = "http://localhost:3001"
+  const [category, setCategory] = useState('all');
+
+  
+
+  useEffect(() => {
+    axios.get(API)
+      .then((res) => {
+        setBestSellers(res.data);
+        console.log(res.data)
+      })
+      .catch((error) => {
+        console.error('Erreur lors de la récupération des données de l\'API :', error);
+      });
+  }, []);
+  
     useEffect(() => {
         const nextBtn = document.querySelector(".next-btn");
         const prevBtn = document.querySelector(".prev-btn");
@@ -25,6 +54,28 @@ export const Accueil = () => {
           });
         }
       });
+      const containerVariants = {
+        hidden: { opacity: 1, scale: 0 },
+        visible: {
+          opacity: 1,
+          scale: 1,
+          transition: {
+            duration: 2,
+            delayChildren: 0.5,
+            staggerChildren: 0.3
+          }
+        }
+      };
+      
+      const itemVariants = {
+        hidden: { y: 20, opacity: 0 },
+        visible: {
+          y: 0,
+          opacity: 1
+        }
+      };
+
+      
   return (
     <div className='Accueil'>
       
@@ -43,7 +94,51 @@ export const Accueil = () => {
          </div>
          
          <div className="right">
-          <img src={leftbg} alt="" />
+         <div className='essai-right'>
+          <motion.div
+            className='essai-images'
+            variants={containerVariants}
+            initial='hidden'
+            animate='visible'
+          >
+            <motion.img
+              className='image1'
+              src={image1}
+              alt=''
+              variants={itemVariants}
+            />
+            <motion.img
+              className='image2'
+              src={image2}
+              alt=''
+              variants={itemVariants}
+            />
+            <motion.img
+              className='image3'
+              src={image3}
+              alt=''
+              variants={itemVariants}
+            />
+            <motion.img
+              className='image4'
+              src={image4}
+              alt=''
+              variants={itemVariants}
+            />
+            <motion.img
+              className='image5'
+              src={image5}
+              alt=''
+              variants={itemVariants}
+            />
+            <motion.img
+              className='image6'
+              src={image6}
+              alt=''
+              variants={itemVariants}
+            />
+          </motion.div>
+        </div>
          </div>
         
          </div>
@@ -52,50 +147,23 @@ export const Accueil = () => {
           <div className='Categories'>
             <div >
               <div className=''>
-                <h2>Homme</h2>
                 <div className='card_categorie'>
               <img src={man} alt="" />
-              <div className='par_cate'>
-                <div>
-                <ul>
-                  <li>Vetements</li>
-                  <li>Chaussure</li>
-                  <li>Accessoire</li>
-                </ul>
-                </div>
-              </div>
+              <Link to='/Homme'> <button><img src={up_right} alt="" /><h2>Homme</h2></button></Link>
               </div>
               </div>
               </div>
 
               <div>
-                <h2>Femme</h2>
             <div className='card_categorie'>
               <img src={woman} alt="" />
-              <div className='par_cate'>
-                <div>
-                <ul>
-                  <li>Vetements</li>
-                  <li>Chaussure</li>
-                  <li>Accessoire</li>
-                </ul>
-                </div>
-                </div>
+              <Link to='/Femme'><button><img src={up_right} alt="" /><h2>Femme</h2></button></Link>
               </div>
               </div>
               <div>
-                <h2>Enfant</h2>
             <div className='card_categorie'>
               <img src={child} alt="" />
-              <div className='par_cate'>
-                <div>
-                <ul>
-                  <li>Vetements</li>
-                  <li>Chaussure</li>
-                  <li>Accessoire</li>
-                </ul>
-                </div>
-              </div>
+              <Link to='/Enfant'> <button><img src={up_right} alt="" /><h2>Enfant</h2></button></Link>
               </div>
               </div>
 
@@ -120,7 +188,7 @@ export const Accueil = () => {
           </div>
           <div className='wrapper-card-img_populaire' >
           <div className='wrap-card-img_populaire' >
-            {Data.map((populaire, index)=> (
+            {bestSellers.map((populaire, index)=> (
               <div key={index} className='card-img_populaire'>
                 <div className='i'>
                   <div className='iconsbag'>
@@ -130,12 +198,20 @@ export const Accueil = () => {
                   <img src={bag} alt="" />
                   </div>
                 </div>
-                <Link to={`/Produit/${populaire.nom}/${populaire.id}`}>
+                
                 <div className='theImg'>
-                <img className='FrontImg' src={populaire.FrontImg} alt="" />
-                <img className='BackImg' src={populaire.BackImg} alt="" />
+                {populaire .images && populaire .images.length > 0 ? (
+                  <>
+                  <Link to={`/ProduitDetails/${populaire.nomProduit}/${populaire.id}`}>
+                 <img src={`${localhost}/uploads/${populaire.images.split(',')[0]}`} alt="" />
+                 <img className='BackImg' src={`${localhost}/uploads/${populaire.images.split(',')[1]}`} alt="" />
+                 </Link> 
+                 </>
+                 ) : (
+                <img src={`${localhost}/uploads/default-image.jpg`} alt="Default" />
+                )}
                 </div>
-                </Link>
+                
               </div>
             ))}
           </div>
@@ -152,28 +228,25 @@ export const Accueil = () => {
          </div>
 
          <div className="Wrapper-type-sport">
-         <h1>Rcherche par sport</h1>
+         <h1>Nouvelle collection Under Armour</h1>
          <div className='Wrap-type-sport'>
           <div className='type-sport'>
-            <div className='one'>
-              <img src={training} alt="" />
+            <div className='collection'>fo
               <p>Training</p>
             </div>
+            <div className='other-collection'>
             <div className='two'>
-            <img src={basket} alt="" />
               <p>Basket</p>
             </div>
             <div className='three'>
-            <img src={running} alt="" />
               <p>Running</p>
             </div>
             <div className='four'>
-            <img src={tennis} alt="" />
               <p>Tennis</p>
             </div>
             <div className='five'>
-            <img src={football} alt="" />
               <p>Football</p>
+            </div>
             </div>
           </div>
          </div>

@@ -1,0 +1,106 @@
+:root{
+    --color: #ffc800 ;
+}
+.Wrap-Panier{
+    padding-top: 70px;
+}
+.Wrap-Panier .Panier{
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.Left-Panier{
+   width: 65%;
+   position: relative;
+   height: calc(100vh - 70px);
+}
+.quantité .increment{
+    width: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: rgb(238, 238, 238);
+    padding: 3px;
+    border-radius: 5px;
+}
+
+.quantité .increment button{
+    padding: 0 10px;
+    font-size: 22px;
+    background: none;
+    outline: none;
+    border: none;
+}
+.quantité .increment button:first-child{
+    border-right: 1px solid grey;
+}
+.quantité .increment button:last-child{
+    border-left: 1px solid grey;
+
+}
+.Right-Panier{
+    background-color: rgb(226, 226, 226);
+    width: 30%;
+    height: 300px;
+    position: relative;
+    margin: 10px;
+    padding: 10px;
+}
+.Right-Panier .in-Right-Panier p{
+    margin: 30px 0;
+}
+
+
+.Right-Panier .lesbtn-Right-Panier{
+    position: absolute;
+    bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+.Right-Panier .lesbtn-Right-Panier button{
+    width: 70%;
+    padding: 10px 0;
+    background-color: var(--color);
+    outline: none;
+    border: none;
+    border-radius: 20px;
+    font-size: 22px;
+    font-weight: bold;
+}
+.Left-Panier .in-Left-Panier{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.Left-Panier .in-Left-Panier .produit-panier{
+    width: 40%;
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.Left-Panier .in-Left-Panier .produit-panier div:first-child{
+    border: 1px solid black;
+    width: 100px;
+    height: 120px;
+    position: relative;
+}
+.Left-Panier .in-Left-Panier .produit-panier div:first-child img{
+    width: 100px;
+    height: 120px;
+}
+.lesbtn-paniers button{
+    outline: none;
+    border: none;
+    background-color: transparent;
+}
+.lesbtn-paniers img{
+    width: 22px;
+    height: 22px;
+}
