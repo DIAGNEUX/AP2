@@ -8,6 +8,8 @@ import panier from '../Assets/icons/bag.png'
 import like from '../Assets/icons/like_icons.png'
 import '../css/Homme.css';
 import { Link } from 'react-router-dom';
+import { useCart } from '../component/Context';
+import { useParams } from 'react-router-dom';
 
 export const Enfant = () => {
   const [StickyLeft, setStickyLeft] = useState(false);
@@ -15,18 +17,51 @@ export const Enfant = () => {
   const [maxPrice, setMaxPrice] = useState(500);
   const [HommeProduit , setHommeProduit]=useState([])
   const API = "http://localhost:3001/produits/enfant";
+  const API_H_vetements = "http://localhost:3001/produits/enfant/vetements";
+  const API_H_chaussure = "http://localhost:3001/produits/enfant/chaussure";
   const localhost = "http://localhost:3001"
+  const { category } = useParams();
+  const [selectedCategory, setSelectedCategory] = useState(category)
+  const { addToCart: addToCartContext } = useCart()
+  
+  const handleCategoryClick = (category) => {
+    setSelectedCategory(category);
+    
+    let categoryAPI;
+    switch (category) {
+      case 'vetements':
+        categoryAPI = `${API}/vetements`;
+        break;
+      case 'chaussure':
+        categoryAPI = API_H_chaussure;
+        break;
+      
+      default:
+        categoryAPI = API;
+        break;
+    }
+ 
 
-  useEffect(() => {
-    axios.get(API)
+  
+    axios.get(categoryAPI)
       .then((res) => {
         setHommeProduit(res.data);
+        console.log(res.data);
       })
       .catch((error) => {
         console.error('Erreur lors de la récupération des données de l\'API :', error);
       });
-  }, []);
-
+}
+useEffect(() => {
+  axios.get(API)
+    .then((res) => {
+      setHommeProduit(res.data);
+      console.log(res.data);
+    })
+    .catch((error) => {
+      console.error('Erreur lors de la récupération des données de l\'API :', error);
+    });
+}, []);
 
 
   const handleStickyLeft = () => {
@@ -68,15 +103,22 @@ export const Enfant = () => {
     maxValue.innerHTML =  maxPrice + "€";
   }
 
+
+  
+  
+  
   return (
     <div className='Homme'>
       <div className='vetements-section'>
         <div>
-      <h1>Vêtements pour Enfant </h1>
+        <div className="panier">
+</div>
+
+      <h1>Vêtements pour Femme </h1>
       <div>
         <ul>
-          <li>Vetements</li>
-          <li>Chaussure</li>
+          <li onClick={() => handleCategoryClick('vetements')}>Vetements</li>
+          <li onClick={() => handleCategoryClick('chaussure')}>Chaussure</li>
           <li>Short</li>
           <li>Pantalon</li>
           <li>Accessoire</li>
@@ -149,7 +191,7 @@ export const Enfant = () => {
               <div>
             <img className='like'src={like} alt="" />
             </div>
-            <div>
+            <div onClick={() => addToCartContext(unproduitHomme)}>
             <img className='panier' src={panier} alt="" />
             </div>
             </div>

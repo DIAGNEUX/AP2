@@ -10,6 +10,7 @@ import { Panier } from './Panier'
 import { Essai } from '../Pages/Essai'
 
 
+
 import {
   like , bag
 } from '../importation/Import'
@@ -19,6 +20,14 @@ import {
   const [showPanier, setShowPanier] = useState(false);
   const [showLike , setShowLike ] = useState(false)
   const localhost = "http://localhost:3001"
+
+  const { isLoggedIn, logout } = useCart(); 
+
+
+  const handleLogout = () => {
+    logout(); 
+  };
+
 
   const handleScroll = () => {
     if(window.pageYOffset > 90){
@@ -80,24 +89,33 @@ import {
             <li><Link to="/Homme">Homme</Link></li>
             <li><Link to="/Femme">Femme</Link></li>
             <li><Link to="/Enfant">Enfant</Link></li>
-            <li><Link to="/Accesoires">Accesoires</Link></li>
             <li><Link to="/Promo">Promo</Link></li>
             <li><Link to="/Admin">Admin</Link></li>
-            <li><Link to="/Essai">Essai</Link></li>
+            
             
         </ul>
         <div className='wrap-con-btn'>
-        <button><Link to="/Connexion">Se connecter</Link></button>
+        {isLoggedIn ? (
+          <div>
+            <button>Mon compte</button> 
+            <button onClick={handleLogout} >Se déconnecter</button> 
+          </div>
+        ) : (
+          <button><Link to="/Connexion">Se connecter</Link></button>
+        )}
         <div className='nav-icon'>
-
+          <div>
           <img className='like-nav' src={like} alt="" 
           onMouseEnter={handleLikeHover} 
           onMouseLeave={handleLikeLeave}
           />
+          </div>
+          <div className='wrap-panier'>
           <img className='Panier-nav' src={bag} alt=""
           onMouseEnter={handlePanierHover} 
           onMouseLeave={handlePanierLeave} />
           <span className='cart-count'>{cart.length}</span>
+          </div>
         </div>
         </div>
         

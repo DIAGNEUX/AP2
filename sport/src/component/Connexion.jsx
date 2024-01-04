@@ -1,8 +1,104 @@
 import React from 'react';
 import '../css/Connexion.css'
 import { useEffect } from 'react';
-
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useCart } from './Context';
+import bcrypt from 'bcryptjs';
 const Connexion = () => {
+  const [nom, setNom] = useState('');
+  const [prenom, setPrenom] = useState('');
+  const [email, setEmail] = useState('');
+  const [mdp, setMdp] = useState('');
+  const [mdpcheck, setMdpcheck] = useState('');
+  const [emailUser, setEmailUser] = useState('');
+  const [passwordUser, setPasswordUser] = useState('');
+  
+  const { login } = useCart();
+
+  const navigate = useNavigate();
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    if (mdp !== mdpcheck) {
+      console.error("Les mots de passe ne correspondent pas");
+      return;
+    }
+    const saltRounds = 10; 
+    const hashedPassword = await bcrypt.hash(mdp, saltRounds);
+
+    const userData = { nom, prenom, email, mdp:hashedPassword };
+
+    try {
+      const response = await fetch('http://localhost:3001/user', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userData),
+      });
+
+      if (response.ok) {
+        console.log('Données envoyées avec succès');
+        setNom('');
+        setPrenom('');
+        setEmail('');
+        setMdp('');
+        setMdpcheck('');
+        navigate('/Connexion');
+        window.location.reload();
+      } else {
+        console.error('Échec de l\'envoi des données');
+      }
+    } catch (error) {
+      console.error('Erreur:', error);
+    }
+  }
+  
+
+  const handleLoginSubmit = async (event) => {
+    event.preventDefault();
+  
+    const userData = {
+      emailUser: emailUser, 
+      passwordUser: passwordUser, 
+    };
+    console.log(userData);
+  
+    try {
+      const response = await fetch('http://localhost:3001/connexion', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userData),
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        console.log(data.role);
+        console.log('Connecté avec succès');
+        setEmailUser('');
+        setPasswordUser('');
+        if (data.role === 1) {
+          navigate('/Admin');
+        } else if (data.role === 0) {
+          navigate('/Accueil');
+        } else {
+          console.error('Rôle non défini ou non autorisé');
+        }
+  
+        login();
+      } else {
+        console.error('Échec de la connexion');
+      }
+    } catch (error) {
+      console.error('Erreur:', error);
+    }
+  };
+  
+  
     useEffect(() => {
         const signUpButton = document.getElementById('signUp');
         const signInButton = document.getElementById('signIn');
@@ -31,26 +127,48 @@ const Connexion = () => {
       <div className="wrap_connexion">
         <div className="container" id="container">
           <div className="form-container sign-up-container">
-            <form action="" method="POST">
+            <form action="" method="POST" onSubmit={handleSubmit}>
               <h1>Créer un compte</h1>
               <span>Tous les champs sont obligatoires</span>  
-              <input type="text" name="prenom" id="prenom" placeholder="prénom" required />
-              <input type="text" name="nom" id="name" placeholder="nom" required />
-              <input type="text" name="mail" id="mail" placeholder="Email" required />
-              <input type="password" name="password" id="password" placeholder="Password" required />
-              <input type="password" name="password-chk" id="password-chk" placeholder="Confirm Password" required />
-              <input type="submit" value="Envoyer" />
+              <input type="text" name="prenom" id="prenom" placeholder="prénom" 
+              onChange={(e) => setPrenom(e.target.value)} required />
+              <input type="text" name="nom" id="name" placeholder="nom" 
+              onChange={(e) => setNom(e.target.value)}
+              required />
+              <input type="text" name="email" id="mail" placeholder="Email"
+              onChange={(e) => setEmail(e.target.value)}
+               required />
+              <input type="password" name="mdp" id="password" placeholder="Password"
+              onChange={(e) => setMdp(e.target.value)}
+               required />
+              <input type="password" name="mdpcheck" id="password-chk" placeholder="Confirm Password"
+              onChange={(e) => setMdpcheck(e.target.value)} 
+              required />
+              <input type="submit" value="s'inscrire" />
             </form>
           </div>
           <div className="form-container sign-in-container">
-            <form action="test.php?action=connexion" method="POST">
-              <h1>Se connecter</h1>
-
-              <input type="text" name="mail" id="mail" placeholder="Email" required />
-              <input type="password" name="password" id="password" placeholder="Password" required />
-              <a href="#">Mot de passe oublié</a>
-              <input type="submit" value="Envoyer" />
-            </form>
+          <form onSubmit={handleLoginSubmit}>
+          <h1>Se connecter</h1>
+          <input
+            type="text"
+            name="emailUser"
+            id="emailUser"
+            placeholder="Email"
+            onChange={(e) => setEmailUser(e.target.value)}
+            required
+          />
+          <input
+            type="password"
+            name="passwordUser"
+            id="passwordUser"
+            placeholder="Password"
+            onChange={(e) => setPasswordUser(e.target.value)}
+            required
+          />
+          <a href="#">Mot de passe oublié</a>
+          <input type="submit" value="Envoyer" />
+        </form>
           </div>
           
           <div className="overlay-container">

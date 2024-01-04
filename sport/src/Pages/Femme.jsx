@@ -8,6 +8,8 @@ import panier from '../Assets/icons/bag.png'
 import like from '../Assets/icons/like_icons.png'
 import '../css/Homme.css';
 import { Link } from 'react-router-dom';
+import { useCart } from '../component/Context';
+import { useParams } from 'react-router-dom';
 
 export const Femme = () => {
   const [StickyLeft, setStickyLeft] = useState(false);
@@ -15,20 +17,51 @@ export const Femme = () => {
   const [maxPrice, setMaxPrice] = useState(500);
   const [HommeProduit , setHommeProduit]=useState([])
   const API = "http://localhost:3001/produits/femme";
+  const API_H_vetements = "http://localhost:3001/produits/femme/vetements";
+  const API_H_chaussure = "http://localhost:3001/produits/femme/chaussure";
   const localhost = "http://localhost:3001"
-  const [Panier, setPanier] = useState([]);
+  const { category } = useParams();
+  const [selectedCategory, setSelectedCategory] = useState(category)
+  const { addToCart: addToCartContext } = useCart()
+  
+  const handleCategoryClick = (category) => {
+    setSelectedCategory(category);
+    
+    let categoryAPI;
+    switch (category) {
+      case 'vetements':
+        categoryAPI = `${API}/vetements`;
+        break;
+      case 'chaussure':
+        categoryAPI = API_H_chaussure;
+        break;
+      
+      default:
+        categoryAPI = API;
+        break;
+    }
+ 
 
-
-  useEffect(() => {
-    axios.get(API)
+  
+    axios.get(categoryAPI)
       .then((res) => {
         setHommeProduit(res.data);
+        console.log(res.data);
       })
       .catch((error) => {
         console.error('Erreur lors de la récupération des données de l\'API :', error);
       });
-  }, []);
-
+}
+useEffect(() => {
+  axios.get(API)
+    .then((res) => {
+      setHommeProduit(res.data);
+      console.log(res.data);
+    })
+    .catch((error) => {
+      console.error('Erreur lors de la récupération des données de l\'API :', error);
+    });
+}, []);
 
 
   const handleStickyLeft = () => {
@@ -69,35 +102,23 @@ export const Femme = () => {
     minValue.innerHTML =  minPrice + "€";
     maxValue.innerHTML =  maxPrice + "€";
   }
-  const addToCart = (produitId) => {
-    // Trouver le produit dans la liste des produits
-    const selectedProduit = HommeProduit.find((produit) => produit.id === produitId);
-    
-    // Vérifier si le produit est déjà dans le panier
-    const existingProduitIndex = Panier.findIndex((item) => item.id === produitId);
-  
-    if (existingProduitIndex !== -1) {
-      // Si le produit existe déjà dans le panier, mettez à jour la quantité ou faites d'autres actions nécessaires
-      // Par exemple, augmenter la quantité du produit dans le panier
-      const updatedCart = [...Panier];
-      updatedCart[existingProduitIndex].quantite += 1;
-      setPanier(updatedCart);
-    } else {
-      // Si le produit n'est pas dans le panier, ajoutez-le avec une quantité de 1
-      setPanier([...Panier, { ...selectedProduit, quantite: 1 }]);
-    }
-  };
-  
 
+
+  
+  
+  
   return (
     <div className='Homme'>
       <div className='vetements-section'>
         <div>
+        <div className="panier">
+</div>
+
       <h1>Vêtements pour Femme </h1>
       <div>
         <ul>
-          <li>Vetements</li>
-          <li>Chaussure</li>
+          <li onClick={() => handleCategoryClick('vetements')}>Vetements</li>
+          <li onClick={() => handleCategoryClick('chaussure')}>Chaussure</li>
           <li>Short</li>
           <li>Pantalon</li>
           <li>Accessoire</li>
@@ -170,7 +191,7 @@ export const Femme = () => {
               <div>
             <img className='like'src={like} alt="" />
             </div>
-            <div onClick={() => addToCart(unproduitHomme.id)} >
+            <div onClick={() => addToCartContext(unproduitHomme)}>
             <img className='panier' src={panier} alt="" />
             </div>
             </div>

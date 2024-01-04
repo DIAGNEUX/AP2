@@ -16,17 +16,27 @@ import image4 from "../Assets/imagedec4.png"
 import image5 from "../Assets/imagedec5.png"
 import image6 from "../Assets/imagedec6.png"
 
-
-
-
+import { useCart } from '../component/Context';
 
 export const Accueil = () => {
   const [bestSellers , setBestSellers] = useState([])
+  const [newcollection , setnewcollection] = useState([])
   const API = "http://localhost:3001/produits/bestSellers";
+  const NewcollectionAPI = "http://localhost:3001/newcollection";
   const localhost = "http://localhost:3001"
   const [category, setCategory] = useState('all');
+  const { addToCart: addToCartContext } = useCart()
 
-  
+  useEffect(() => {
+    axios.get(NewcollectionAPI)
+      .then((res) => {
+        setnewcollection(res.data);
+        console.log(res.data)
+      })
+      .catch((error) => {
+        console.error('Erreur lors de la récupération des données de l\'API :', error);
+      });
+  }, []);
 
   useEffect(() => {
     axios.get(API)
@@ -181,6 +191,28 @@ export const Accueil = () => {
              
           </div>
          </div>
+
+         <div className="NewCollection">
+         <h1>Nouvelle collection Under Armour</h1>
+         <div className='Wrapper-collection'>
+          <div className='wrap-collection'>
+            
+            {newcollection.map((newcollect, index)=> (
+              <>
+              
+              <div className='each-collection'>
+              <Link to={`/ProduitDetails/${newcollect.nomProduit}/${newcollect.id}`}>
+                <div className='prod-collection'>
+                <img src={`${localhost}/uploads/${newcollect.images.split(',')[0]}`} alt="" />
+                </div>
+                </Link>
+              </div>
+              
+              </>
+            ))}
+          </div>
+         </div>
+         </div>
          <div className='populaire'>
           <div className='Wrap-Autre-produits'>
             <h1>Meilleures ventes</h1>
@@ -194,7 +226,7 @@ export const Accueil = () => {
                   <div className='iconsbag'>
                   <img src={like} alt="" />
                   </div>
-                  <div className='iconsbag'>
+                  <div onClick={() => addToCartContext(populaire)}  className='iconsbag'>
                   <img src={bag} alt="" />
                   </div>
                 </div>
@@ -227,30 +259,7 @@ export const Accueil = () => {
           
          </div>
 
-         <div className="Wrapper-type-sport">
-         <h1>Nouvelle collection Under Armour</h1>
-         <div className='Wrap-type-sport'>
-          <div className='type-sport'>
-            <div className='collection'>fo
-              <p>Training</p>
-            </div>
-            <div className='other-collection'>
-            <div className='two'>
-              <p>Basket</p>
-            </div>
-            <div className='three'>
-              <p>Running</p>
-            </div>
-            <div className='four'>
-              <p>Tennis</p>
-            </div>
-            <div className='five'>
-              <p>Football</p>
-            </div>
-            </div>
-          </div>
-         </div>
-         </div>
+        
          
          </div>
     </div>

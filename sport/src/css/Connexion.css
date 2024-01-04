@@ -178,8 +178,6 @@ body{
   
   .wrap_connexion  .overlay {
     background: #ffc800 ;
-    background: -webkit-linear-gradient(to right, #ffc800 , #efc21d );
-    background: linear-gradient(0.25turn, #ffc800 , red, #f69d3c);
     background-repeat: no-repeat;
     background-size: cover;
     background-position: 0 0;

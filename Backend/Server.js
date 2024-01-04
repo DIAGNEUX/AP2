@@ -4,6 +4,8 @@ const port = 3001;
 const db = require('./dbb/connexion');
 const cors = require('cors');
 const multer = require('multer');
+const bcrypt = require('bcrypt');
+
 
 app.use(express.json());
 app.use(cors());
@@ -29,6 +31,69 @@ const storage = multer.diskStorage({
   },
 });
 
+app.get('/user', (req, res) => {
+  const sql = 'SELECT * FROM user';
+  db.query(sql, (err, data) => {
+    if (err) {
+      console.error('Erreur lors de la sélection des utilisateurs :', err);
+      return res.status(500).json(err);
+    }
+    return res.json(data);
+  });
+})
+
+app.post('/connexion', (req, res) => {
+  const { emailUser, passwordUser } = req.body;
+  
+  if (!emailUser || !passwordUser) {
+    return res.status(400).json({ message: 'Veuillez remplir tous les champs' });
+  } else {
+    const sql = 'SELECT * FROM user WHERE email = ?';
+    db.query(sql, [emailUser], async (err, data) => {
+      if (err) {
+        console.error('Erreur lors de la sélection des utilisateurs :', err);
+        return res.status(500).json({ message: 'Erreur serveur' });
+      }
+
+      if (data.length === 0) {
+        return res.status(401).json({ message: 'Identifiants incorrects' });
+      }
+
+      const user = data[0];
+      const hashedPassword = user.mdp;
+
+      const passwordMatch = await bcrypt.compare(passwordUser, hashedPassword);
+      if (!passwordMatch) {
+        return res.status(401).json({ message: 'Identifiants incorrects' });
+      }
+      
+      const userData = {
+        id: user.id,
+        nom: user.nom,
+        prenom: user.prenom,
+        role: user.role 
+      };
+
+      return res.json(userData);
+    });
+  }
+});
+
+
+
+app.post('/user', (req, res) => {
+  const { nom, prenom, email, mdp } = req.body;
+  const sql = 'INSERT INTO user (nom, prenom, email, mdp) VALUES (?, ?, ?, ?)';
+  db.query(sql, [nom, prenom, email, mdp], (err, result) => {
+    if (err) {
+      console.error('Erreur lors de l\'insertion de l\'utilisateur :', err);
+      return res.status(500).json(err);
+    }
+    return res.status(200).json({ message: 'Utilisateur enregistré avec succès' });
+  });
+});
+ 
+
 const upload = multer({
   storage: storage,
   limits: { fileSize: 5 * 1024 * 1024 },
@@ -45,8 +110,18 @@ app.get('/produits', (req, res) => {
     return res.json(data);
   });
 });
+app.get('/produits/promo', (req, res) => {
+  const sql = 'SELECT * FROM produits where promo > 0';
+  db.query(sql, (err, data) => {
+    if (err) {
+      console.error('Erreur lors de la récupération des produits :', err);
+      return res.status(500).json(err);
+    }
+    return res.json(data);
+  });
+});
 app.get('/produits/bestSellers', (req, res) => {
-  const sql = 'SELECT * FROM produits WHERE best = "best" ORDER BY id DESC';
+  const sql = 'SELECT * FROM produits WHERE best = "best" ORDER BY id ASC ';
   db.query(sql, (err, data) => {
     if (err) {
       console.error('Erreur lors de la récupération des produits :', err);
@@ -93,8 +168,8 @@ app.get('/produits/femme/chaussure', (req, res) => {
     return res.json(data);
   });
 });
-app.get('/produits/enfant/chaussure', (req, res) => {
-  const sql = 'SELECT * FROM produits WHERE categorie = "Enfant" AND cateType= "chaussure"  ';
+app.get('/produits/enfant/vetements', (req, res) => {
+  const sql = 'SELECT * FROM produits WHERE categorie = "Enfant" AND cateType= "vêtements"  ';
   db.query(sql, (err, data) => {
     if (err) return res.status(500).json(err);
     return res.json(data);
@@ -149,6 +224,17 @@ app.get('/produits/:id', (req, res) => {
   const sql = 'SELECT * FROM produits WHERE id = ?';
   db.query(sql, [productId], (err, data) => {
     if (err) return res.status(500).json(err);
+    return res.json(data);
+  });
+});
+
+app.get('/newcollection', (req, res) => {
+  const sql = 'SELECT * FROM produits WHERE nomProduit = "Under Armour Haut Zippé Tech Homme"';
+  db.query(sql, (err, data) => {
+    if (err) {
+      console.error('Erreur lors de la récupération des produits :', err);
+      return res.status(500).json(err);
+    }
     return res.json(data);
   });
 });
