@@ -1,7 +1,9 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
+import axios from 'axios';
+import Cookies from 'js-cookie';
+
 
 const CartContext = createContext();
-
 export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState(() => {
     const storedCart = localStorage.getItem('cart');
@@ -31,21 +33,36 @@ export const CartProvider = ({ children }) => {
     setUserRole(role);
     localStorage.setItem('userRole', role);
   };
-
-  const addToCart = (product) => {
-    const existingProductIndex = cart.findIndex(item => item.id === product.id);
-    if (existingProductIndex !== -1) {
-      const updatedCart = [...cart];
-      updatedCart[existingProductIndex].quantity += 1;
-      setCart(updatedCart);
-      saveCartToLocalStorage(updatedCart);
-    } else {
-      const updatedCart = [...cart, { ...product, quantity: 1 }];
-      setCart(updatedCart);
-      saveCartToLocalStorage(updatedCart);
+  const addToCart = async (product) => {
+    try {
+      const userId = Cookies.get('iduser');
+      if (!product.id) {
+        console.error('L\'ID du produit est manquant ou nul.');
+        return;
+      }
+  
+      const response = await axios.post('http://localhost:3001/addToCart', {
+        utilisateur_id: userId,
+        produit_id: product.id,
+      });
+  
+      if (response.status === 200) {
+        const cartResponse = await axios.get(`http://localhost:3001/getCart?utilisateur_id=${userId}`);
+  
+        if (cartResponse.status === 200) {
+          const updatedCart = cartResponse.data;
+          // Modifier ici pour inclure le nom, l'image et le prix dans chaque élément du panier
+          const detailedCart = await axios.post('http://localhost:3001/getProducts', { cart: updatedCart });
+  
+          setCart(detailedCart.data);
+          saveCartToLocalStorage(detailedCart.data);
+        }
+      }
+    } catch (error) {
+      console.error('Error adding product to cart:', error);
     }
   };
-
+  
   const removeUnCart = (productId) => {
     const existingProductIndex = cart.findIndex(item => item.id === productId);
     if (existingProductIndex !== -1) {
@@ -71,6 +88,7 @@ export const CartProvider = ({ children }) => {
     localStorage.removeItem('cart');
   };
 
+
   const login = () => {
     setIsLoggedIn(true);
     localStorage.setItem('isLoggedIn', '1');
@@ -80,6 +98,7 @@ export const CartProvider = ({ children }) => {
     setIsLoggedIn(false);
     localStorage.removeItem('isLoggedIn');
   };
+  
 
   return (
     <CartContext.Provider

@@ -75,6 +75,12 @@ a{
     align-items: center;
     justify-content: center;
     gap: 20px;
+
+
+}
+.wrap-con-btn button{
+  margin: 0 8px;
+  color: black;
 }
 .Navbarsticky .wrap-con-btn .nav-icon img ,
 .Navbar .wrap-con-btn .nav-icon img{
@@ -202,7 +208,9 @@ a{
     height: 100vh;
     position: relative;
 }
-
+.AdminUL li a{
+  margin:0 20px;
+}
 .essai-images{
   height: 100vh;
   overflow: hidden;

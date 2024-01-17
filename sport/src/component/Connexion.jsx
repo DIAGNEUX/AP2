@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from './Context';
 import bcrypt from 'bcryptjs';
+import Cookies from 'js-cookie';
 const Connexion = () => {
   const [nom, setNom] = useState('');
   const [prenom, setPrenom] = useState('');
@@ -28,7 +29,7 @@ const Connexion = () => {
     const saltRounds = 10; 
     const hashedPassword = await bcrypt.hash(mdp, saltRounds);
 
-    const userData = { nom, prenom, email, mdp:hashedPassword };
+    const userData = {nom, prenom, email, mdp:hashedPassword };
 
     try {
       const response = await fetch('http://localhost:3001/user', {
@@ -81,14 +82,20 @@ const Connexion = () => {
         console.log('Connecté avec succès');
         setEmailUser('');
         setPasswordUser('');
+        Cookies.set('userRole', data.role, { expires: 7 }); 
+        Cookies.set('userNom', data.nom, { expires: 7 })
+        Cookies.set('iduser', data.id, { expires: 7 })
+        console.log(data.nom)
         if (data.role === 1) {
           navigate('/Admin');
+          console.log(data.role)
+          window.location.reload()
         } else if (data.role === 0) {
           navigate('/Accueil');
+          window.location.reload()
         } else {
           console.error('Rôle non défini ou non autorisé');
         }
-  
         login();
       } else {
         console.error('Échec de la connexion');

@@ -3,7 +3,11 @@ import add from '../Assets/icons/add.png';
 import { useState, useEffect } from 'react';
 import close from '../Assets/icons/close.png';
 import axios from 'axios';
-
+import sup from "../Assets/icons/icons8-poubelle-52.png"
+import modif from "../Assets/icons/icons8-modifier-64.png"
+import utilisateur from "../Assets/icons/icons8-utilisateur-50.png"
+import produit from "../Assets/icons/icons8-produit-50.png"
+import commande from "../Assets/icons/icons8-ordre-d'achat-50.png"
 export const Admin = () => {
   const localhost = "http://localhost:3001";
   const [nom, setNom] = useState('');
@@ -18,19 +22,32 @@ export const Admin = () => {
   const [editingProduct, setEditingProduct] = useState(null);
   const [overlayVisible, setOverlayVisible] = useState(false);
   const [produits, setProduits] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [selectedMenuItem, setSelectedMenuItem] = useState('produit');
 
-  const API = "http://localhost:3001/produits";
+  const handleMenuClick = (menuItem) => {
+    setSelectedMenuItem(menuItem);
+  };
+  const produitsAPI = "http://localhost:3001/produits";
+  const usersAPI = "http://localhost:3001/user";
 
   useEffect(() => {
-    axios.get(API)
-      .then((res) => {
-        setProduits(res.data);
-      })
-      .catch((error) => {
-        console.error('Erreur lors de la récupération des données de l\'API :', error);
-      });
-  }, []);
+    axios.get(produitsAPI)
+    .then((res) => {
+      setProduits(res.data);
+    })
+    .catch((error) => {
+      console.error('Erreur lors de la récupération des données de l\'API des produits :', error);
+    });
 
+  axios.get(usersAPI)
+    .then((res) => {
+      setUsers(res.data);
+    })
+    .catch((error) => {
+      console.error('Erreur lors de la récupération des données de l\'API des utilisateurs :', error);
+    });
+  }, []);
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -53,7 +70,7 @@ export const Admin = () => {
       }
 
 
-      await axios.post(API, formData);
+      await axios.post(produitsAPI, formData);
       setOverlayVisible(false);
       window.location.reload()
     } catch (error) {
@@ -63,7 +80,7 @@ export const Admin = () => {
 
   const handleDelete = async (productId) => {
     try {
-      await axios.delete(`${API}/${productId}`);
+      await axios.delete(`${produitsAPI}/${productId}`);
       setProduits((prevProducts) => prevProducts.filter((product) => product.id !== productId));
     } catch (error) {
       console.error('Error:', error);
@@ -110,9 +127,8 @@ export const Admin = () => {
         });
       }
   
-      await axios.put(`${API}/${editingProduct.id}`, formData);
-  
-      // Mettre à jour localement les produits affichés si nécessaire
+      await axios.put(`${produitsAPI}/${editingProduct.id}`, formData);
+     
       setProduits((prevProducts) =>
         prevProducts.map((product) =>
           product.id === editingProduct.id
@@ -120,8 +136,7 @@ export const Admin = () => {
             : product
         )
       );
-  
-      // Fermer la fenêtre de modification après la mise à jour
+     
       setOverlayVisible(false);
       setEditingProduct(null);
     } catch (error) {
@@ -137,22 +152,22 @@ export const Admin = () => {
           <div>
             <div className="logo"></div>
             <ul>
-              <li>Tous les vêtements</li>
-              <li>Homme</li>
-              <li>Femme</li>
-              <li>Enfant</li>
-              <li>Accessoires</li>
+            <li onClick={() => handleMenuClick('produit')}><img src={produit} alt="" /> Produit</li>
+              <li onClick={() => handleMenuClick('utilisateur')}> <img src={utilisateur} alt="" /> Utilisateur</li>
+              <li onClick={() => handleMenuClick('commande')}> <img src={commande} alt="" /> Commande</li>
             </ul>
           </div>
         </div>
         <div className="lesproduits">
-          <div className="table">
+        {selectedMenuItem === 'produit' && (
+            <div className="table">
             <div className="table-header">
               <div className="header__item"><a id="name" className="filter__link" href="#">Id</a></div>
               <div className="header__item"><a id="wins" className="filter__link filter__link--number" href="#">image</a></div>
               <div className="header__item"><a id="draws" className="filter__link filter__link--number" href="#">nom</a></div>
               <div className="header__item"><a id="losses" className="filter__link filter__link--number" href="#">Promo</a></div>
               <div className="header__item"><a id="total" className="filter__link filter__link--number" href="#">prix</a></div>
+              <div className="header__item"><a id="total" className="filter__link filter__link--number" href="#">Quantité </a></div>
               <div className="header__item"><a id="total" className="filter__link filter__link--number" href="#"></a></div>
             </div>
             <div className="table-content">
@@ -169,14 +184,41 @@ export const Admin = () => {
                   <div className="table-data">{unproduit.nomProduit}</div>
                   <div className="table-data">{unproduit.promo}</div>
                   <div className="table-data">{unproduit.prix}.00 €</div>
+                  <div className="table-data">{unproduit.Quantité}</div>
                   <div className="table-data">
-                    <button onClick={() => handleDelete(unproduit.id)}>Delete</button>
-                    <button onClick={() => handleEdit(unproduit.id)}>Modif</button>
+                    <button onClick={() => handleEdit(unproduit.id)}><img src={modif} alt="" /></button>
+                    <button onClick={() => handleDelete(unproduit.id)}><img src={sup} alt="" /></button>
                   </div>
                 </div>
               ))}
             </div>
           </div>
+          )}
+          {selectedMenuItem === 'utilisateur' && (
+            <div className="table_utilisateur">
+              <ul>
+                {users.map((user, index) => (
+                  <li key={index}>
+                    <div className="admin_utilisateur">
+                      <div className="adminLeft_utilisateur">
+                      <div> <p> {user.nom && user.nom.charAt(0)}</p>.<p>{user.prenom && user.prenom.charAt(0)}</p></div>
+                      </div>
+                      <div className="adminRight_utilisateur">
+                        <h4>{user.nom} {user.prenom}</h4>
+                        <p>{user.email}</p>
+                      </div>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {selectedMenuItem === 'commande' && (
+            <div className="table">
+              <h1>Commande</h1>
+            </div>
+          )}
+          
         </div>
       </div>
       <div className="add-button" onClick={() => setOverlayVisible(true)}>

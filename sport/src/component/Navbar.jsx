@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import {Link} from 'react-router-dom'
+import {Link, Navigate} from 'react-router-dom'
 import Logo from "../Assets/logo2.png"
 import triangle from "../Assets/icons/triangle.png"
 import { Admin } from '../Pages/Admin'
@@ -8,26 +8,37 @@ import likeIcon from '../Assets/icons/like_icons.png'
 import close from '../Assets/icons/close.png'
 import { Panier } from './Panier'
 import { Essai } from '../Pages/Essai'
+import { useNavigate } from 'react-router-dom'
+import Cookies from 'js-cookie';
+import axios from 'axios';
 
-
+ 
 
 import {
   like , bag
 } from '../importation/Import'
  const Navbar = () => {
-  const { cart, removeFromCart, clearCart } = useCart();
+  const Navigate = useNavigate();
+  const { cart, removeFromCart, clearCart, setCart, saveCartToLocalStorage } = useCart();
   const [sticky , setSticky]= useState(false)
   const [showPanier, setShowPanier] = useState(false);
   const [showLike , setShowLike ] = useState(false)
   const localhost = "http://localhost:3001"
 
   const { isLoggedIn, logout } = useCart(); 
+  const [userRole, setUserRole] = useState('');
+  const [userName, setUserName] = useState('');
 
 
   const handleLogout = () => {
-    logout(); 
+    Cookies.remove('userRole');
+    Cookies.remove('userNom');
+    logout();
+    Navigate('/Accueil');
+    window.location.reload();
+    setUserRole('');
+    fetchCartDetails();
   };
-
 
   const handleScroll = () => {
     if(window.pageYOffset > 90){
@@ -75,6 +86,52 @@ import {
     setShowLike(false);
   }
 
+// ...
+
+const fetchCartDetails = async () => {
+  try {
+    const userId = Cookies.get('iduser');
+    if (!userId) {
+      console.error('L\'ID de l\'utilisateur est manquant ou nul.');
+      return;
+    }
+
+    // Récupérez les détails du panier via la route getCart existante
+    const cartResponse = await axios.get(`http://localhost:3001/getCart?utilisateur_id=${userId}`);
+    console.log('Cart Response:', cartResponse.data); // Ajoutez cette ligne pour déboguer
+
+    if (cartResponse.status === 200) {
+      const updatedCart = cartResponse.data;
+
+      // Récupérez les détails des produits du panier via une nouvelle route getProducts
+      const productsResponse = await axios.post('http://localhost:3001/getProducts', { cart: updatedCart });
+
+      if (productsResponse.status === 200) {
+        const cartWithDetails = productsResponse.data;
+        setCart(cartWithDetails);
+        saveCartToLocalStorage(cartWithDetails);
+      }
+    }
+  } catch (error) {
+    console.error('Error fetching cart details:', error);
+  }
+};
+
+useEffect(() => {
+  fetchCartDetails();
+}, []); // Assurez-vous que cette dépendance est correctement gérée
+console.log('Cart:', cart); // Ajoutez cette ligne pour déboguer
+
+// ...
+
+  useEffect(() => {
+    const role = Cookies.get('userRole');
+    const userName = Cookies.get('userNom');
+    console.log(role)
+    setUserRole(role);
+    console.log(userName)
+    setUserName(userName);
+  }, []);
 
   
   return (
@@ -85,37 +142,68 @@ import {
         <img src={Logo} alt="" />
         </Link>
       </div>
-        <ul>
+      <ul>
+      {isLoggedIn ? (
+        <>
+         {userRole === '0' ? (
+          <>
+          <ul>
             <li><Link to="/Homme">Homme</Link></li>
             <li><Link to="/Femme">Femme</Link></li>
             <li><Link to="/Enfant">Enfant</Link></li>
             <li><Link to="/Promo">Promo</Link></li>
-            <li><Link to="/Admin">Admin</Link></li>
-            
-            
-        </ul>
+            </ul>
+          </>
+        ) : userRole === '1' ? (
+          <ul className='AdminUL'>
+          <li>
+          
+          </li>
+          </ul>
+        ) : null
+        }
+     </>
+        ) : (
+          <ul>
+             <li><Link to="/Homme">Homme</Link></li>
+            <li><Link to="/Femme">Femme</Link></li>
+            <li><Link to="/Enfant">Enfant</Link></li>
+            <li><Link to="/Promo">Promo</Link></li>
+          </ul>
+          
+        )}
+    
+  </ul>
         <div className='wrap-con-btn'>
         {isLoggedIn ? (
           <div>
-            <button>Mon compte</button> 
+            <button>{userName}</button> 
             <button onClick={handleLogout} >Se déconnecter</button> 
           </div>
         ) : (
           <button><Link to="/Connexion">Se connecter</Link></button>
         )}
         <div className='nav-icon'>
-          <div>
-          <img className='like-nav' src={like} alt="" 
-          onMouseEnter={handleLikeHover} 
-          onMouseLeave={handleLikeLeave}
-          />
-          </div>
-          <div className='wrap-panier'>
-          <img className='Panier-nav' src={bag} alt=""
-          onMouseEnter={handlePanierHover} 
-          onMouseLeave={handlePanierLeave} />
-          <span className='cart-count'>{cart.length}</span>
-          </div>
+        {userRole === '0' ? (
+          <>
+           <div>
+           <img className='like-nav' src={like} alt="" 
+           onMouseEnter={handleLikeHover} 
+           onMouseLeave={handleLikeLeave}
+           />
+           </div>
+           <div className='wrap-panier'>
+           <img className='Panier-nav' src={bag} alt=""
+           onMouseEnter={handlePanierHover} 
+           onMouseLeave={handlePanierLeave} />
+           <span className='cart-count'>{cart.length}</span>
+           </div>
+           </>
+        ):(
+          <>
+          </>
+        )}
+          
         </div>
         </div>
         
