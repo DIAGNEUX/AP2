@@ -5,14 +5,34 @@ import Cookies from 'js-cookie';
 
 const CartContext = createContext();
 export const CartProvider = ({ children }) => {
-  const [cart, setCart] = useState(() => {
-    const storedCart = localStorage.getItem('cart');
-    return storedCart ? JSON.parse(storedCart) : [];
-  });
+  const [cart, setCart] = useState([]);
 
-  const saveCartToLocalStorage = (updatedCart) => {
-    localStorage.setItem('cart', JSON.stringify(updatedCart));
+  const fetchCartDetails = async () => {
+    try {
+      const userId = Cookies.get('iduser');
+      if (!userId) {
+        console.error('L\'ID de l\'utilisateur est manquant ou nul.');
+        return;
+      }
+
+      const cartResponse = await axios.get(`http://localhost:3001/getCart?utilisateur_id=${userId}`);
+      console.log('Cart Response:', cartResponse.data); // Ajoutez cette ligne pour déboguer
+  
+      if (cartResponse.status === 200) {
+        const updatedCart = cartResponse.data;
+      
+        const productsResponse = await axios.post('http://localhost:3001/getProducts', { cart: updatedCart });
+  
+        if (productsResponse.status === 200) {
+          const cartWithDetails = productsResponse.data;
+          setCart(cartWithDetails);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching cart details:', error);
+    }
   };
+  
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userRole, setUserRole] = useState(null);
@@ -33,6 +53,16 @@ export const CartProvider = ({ children }) => {
     setUserRole(role);
     localStorage.setItem('userRole', role);
   };
+  useEffect(() => {
+    const fetchData = async () => {
+      await fetchCartDetails();
+    };
+
+    if (isLoggedIn) {
+      fetchData();
+    }
+  }, [isLoggedIn]);
+
   const addToCart = async (product) => {
     try {
       const userId = Cookies.get('iduser');
@@ -53,35 +83,59 @@ export const CartProvider = ({ children }) => {
           const updatedCart = cartResponse.data;
           // Modifier ici pour inclure le nom, l'image et le prix dans chaque élément du panier
           const detailedCart = await axios.post('http://localhost:3001/getProducts', { cart: updatedCart });
-  
           setCart(detailedCart.data);
-          saveCartToLocalStorage(detailedCart.data);
         }
       }
     } catch (error) {
       console.error('Error adding product to cart:', error);
     }
   };
+ 
+  const removeFromCart = async (productId) => {
+    try {
+      const userId = Cookies.get('iduser');
+      const response = await axios.post('http://localhost:3001/removeFromCart', {
+        utilisateur_id: userId,
+        produit_id: productId,
+      });
   
-  const removeUnCart = (productId) => {
-    const existingProductIndex = cart.findIndex(item => item.id === productId);
-    if (existingProductIndex !== -1) {
-      const updatedCart = [...cart];
-      if (updatedCart[existingProductIndex].quantity > 1) {
-        updatedCart[existingProductIndex].quantity -= 1;
+      if (response.status === 200) {
+        const updatedCart = await axios.get(`http://localhost:3001/getCart?utilisateur_id=${userId}`);
+        const detailedCart = await axios.post('http://localhost:3001/getProducts', { cart: updatedCart.data });
+        setCart(detailedCart.data);
       } else {
-        updatedCart.splice(existingProductIndex, 1);
+        console.error('Erreur lors de la suppression du produit du panier:', response.data.message);
+        // Gérer l'erreur en affichant un message à l'utilisateur ou en effectuant d'autres actions nécessaires
       }
-      setCart(updatedCart);
-      saveCartToLocalStorage(updatedCart);
+    } catch (error) {
+      console.error('Erreur lors de la suppression du produit du panier:', error.message);
+      // Gérer l'erreur en affichant un message à l'utilisateur ou en effectuant d'autres actions nécessaires
     }
   };
-
-  const removeFromCart = (productId) => {
-    const updatedCart = cart.filter((item) => item.id !== productId);
-    setCart(updatedCart);
-    saveCartToLocalStorage(updatedCart);
+  const updateCartItemQuantity = async (productId, quantity) => {
+    try {
+      const userId = Cookies.get('iduser');
+      const response = await axios.post('http://localhost:3001/updateCartItemQuantity', {
+        utilisateur_id: userId,
+        produit_id: productId,
+        quantity,
+      });
+  
+      if (response.status === 200) {
+        // Mise à jour réussie, vous pouvez mettre à jour localement la quantité dans le panier
+        // Réexécutez votre logique pour récupérer et afficher le panier mis à jour
+        await fetchCartDetails();
+      } else {
+        console.error('Erreur lors de la mise à jour de la quantité du produit dans le panier:', response.data);
+        // Gérer l'erreur en affichant un message à l'utilisateur ou en effectuant d'autres actions nécessaires
+      }
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour de la quantité du produit dans le panier:', error.message);
+      // Gérer l'erreur en affichant un message à l'utilisateur ou en effectuant d'autres actions nécessaires
+    }
   };
+  
+  
 
   const clearCart = () => {
     setCart([]);
@@ -89,10 +143,12 @@ export const CartProvider = ({ children }) => {
   };
 
 
-  const login = () => {
+  const login = async () => {
     setIsLoggedIn(true);
     localStorage.setItem('isLoggedIn', '1');
+    await fetchCartDetails();
   };
+  
 
   const logout = () => {
     setIsLoggedIn(false);
@@ -107,11 +163,11 @@ export const CartProvider = ({ children }) => {
         isLoggedIn,
         userRole,
         addToCart,
-        removeUnCart,
         removeFromCart,
         clearCart,
         login,
         logout,
+        updateCartItemQuantity,
         updateUserRole,
       }}
     >

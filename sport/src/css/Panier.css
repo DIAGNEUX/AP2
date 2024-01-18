@@ -104,3 +104,10 @@
     width: 22px;
     height: 22px;
 }
+.increment button[disabled] {
+    opacity: 0.5; 
+    cursor: not-allowed;
+}
+.quantite-restante{
+    font-weight: bold;
+}

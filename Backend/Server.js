@@ -35,37 +35,51 @@ const storage = multer.diskStorage({
 app.post('/addToCart', async (req, res) => {
   const { utilisateur_id, produit_id } = req.body;
 
-  // Vérifier si l'utilisateur a déjà un panier existant avec ce produit
-  const findCartQuery = 'SELECT id, quantite FROM panier WHERE utilisateur_id = ? AND produit_id = ?';
-  db.query(findCartQuery, [utilisateur_id, produit_id], (findCartErr, findCartResult) => {
-    if (findCartErr) {
-      console.error(findCartErr);
-      return res.status(500).send('Erreur lors de la recherche du panier de l\'utilisateur');
+  // Récupérer le prix du produit depuis la table produits
+  const getProductPriceQuery = 'SELECT prix FROM produits WHERE id = ?';
+  db.query(getProductPriceQuery, [produit_id], (getPriceErr, getPriceResult) => {
+    if (getPriceErr) {
+      console.error(getPriceErr);
+      return res.status(500).send('Erreur lors de la récupération du prix du produit');
     }
-    if (findCartResult.length > 0) {
-      // Mise à jour de la quantité du produit existant
-      const updatedQuantity = findCartResult[0].quantite + 1;
-      const updateCartQuery = 'UPDATE panier SET quantite = ? WHERE id = ?';
-      db.query(updateCartQuery, [updatedQuantity, findCartResult[0].id], (updateCartErr, updateCartResult) => {
-        if (updateCartErr) {
-          console.error(updateCartErr);
-          return res.status(500).send('Erreur lors de la mise à jour du panier');
-        }
 
-        console.log('Produit ajouté au panier avec succès !');
-        res.status(200).send('Produit ajouté au panier avec succès !');
-      });
-    } else {
-      const addToCartQuery = 'INSERT INTO panier (utilisateur_id, produit_id, quantite) VALUES (?, ?, 1)';
-      db.query(addToCartQuery, [utilisateur_id, produit_id], (addToCartErr, addToCartResult) => {
-        if (addToCartErr) {
-          console.error(addToCartErr);
-          return res.status(500).send('Erreur lors de l\'ajout du produit au panier');
-        }
-        console.log('Produit ajouté au panier avec succès !');
-        res.status(200).send('Produit ajouté au panier avec succès !');
-      });
-    }
+    const produit_prix = getPriceResult[0].prix;
+
+    // Vérifier si l'utilisateur a déjà un panier existant avec ce produit
+    const findCartQuery = 'SELECT id, quantite, prix FROM panier WHERE utilisateur_id = ? AND produit_id = ?';
+    db.query(findCartQuery, [utilisateur_id, produit_id], (findCartErr, findCartResult) => {
+      if (findCartErr) {
+        console.error(findCartErr);
+        return res.status(500).send('Erreur lors de la recherche du panier de l\'utilisateur');
+      }
+
+      if (findCartResult.length > 0) {
+        // Mise à jour de la quantité du produit existant
+        const updatedQuantity = findCartResult[0].quantite + 1;
+        const updatedTotalPrice = findCartResult[0].prix + produit_prix;
+        const updateCartQuery = 'UPDATE panier SET quantite = ?, prix = ? WHERE id = ?';
+        db.query(updateCartQuery, [updatedQuantity, updatedTotalPrice, findCartResult[0].id], (updateCartErr, updateCartResult) => {
+          if (updateCartErr) {
+            console.error(updateCartErr);
+            return res.status(500).send('Erreur lors de la mise à jour du panier');
+          }
+
+          console.log('Produit ajouté au panier avec succès !');
+          res.status(200).send('Produit ajouté au panier avec succès !');
+        });
+      } else {
+        // Ajouter le produit au panier avec la quantité initial 1 et le prix du produit
+        const addToCartQuery = 'INSERT INTO panier (utilisateur_id, produit_id, quantite, prix) VALUES (?, ?, 1, ?)';
+        db.query(addToCartQuery, [utilisateur_id, produit_id, produit_prix], (addToCartErr, addToCartResult) => {
+          if (addToCartErr) {
+            console.error(addToCartErr);
+            return res.status(500).send('Erreur lors de l\'ajout du produit au panier');
+          }
+          console.log('Produit ajouté au panier avec succès !');
+          res.status(200).send('Produit ajouté au panier avec succès !');
+        });
+      }
+    });
   });
 });
 app.get('/getCart', (req, res) => {
@@ -85,7 +99,7 @@ app.get('/getCart', (req, res) => {
 app.post('/getProducts', async (req, res) => {
   try {
     const cart = req.body.cart;
-    const getProductsQuery = 'SELECT id, nomProduit, prix, images FROM produits WHERE id IN (?)';
+    const getProductsQuery = 'SELECT id, nomProduit, prix, images, Quantité FROM produits WHERE id IN (?)';
     const productIds = cart.map(item => item.produit_id);
 
     const getProductsResult = await new Promise((resolve, reject) => {
@@ -112,6 +126,71 @@ app.post('/getProducts', async (req, res) => {
     res.status(500).send('Erreur lors de la récupération des détails des produits du panier');
   }
 });
+
+// Dans votre fichier serveur
+app.post('/removeFromCart', async (req, res) => {
+  const { utilisateur_id, produit_id } = req.body;
+
+  try {
+    // Effectuez la suppression du produit du panier dans la base de données
+    const removeFromCartQuery = 'DELETE FROM panier WHERE utilisateur_id = ? AND produit_id = ?';
+    await new Promise((resolve, reject) => {
+      db.query(removeFromCartQuery, [utilisateur_id, produit_id], (removeErr, removeResult) => {
+        if (removeErr) {
+          console.error(removeErr);
+          reject('Erreur lors de la suppression du produit du panier');
+        }
+        resolve();
+      });
+    });
+
+    res.status(200).send('Produit supprimé du panier avec succès !');
+  } catch (error) {
+    console.error('Erreur lors de la suppression du produit du panier:', error);
+    res.status(500).send('Erreur lors de la suppression du produit du panier');
+  }
+});
+// Dans votre fichier serveur
+app.post('/updateCartItemQuantity', async (req, res) => {
+  const { utilisateur_id, produit_id, quantity } = req.body;
+
+  try {
+    // Vérifiez si le produit existe dans le panier
+    const findCartQuery = 'SELECT id, quantite FROM panier WHERE utilisateur_id = ? AND produit_id = ?';
+    const findCartResult = await new Promise((resolve, reject) => {
+      db.query(findCartQuery, [utilisateur_id, produit_id], (findCartErr, findCartResult) => {
+        if (findCartErr) {
+          console.error(findCartErr);
+          reject('Erreur lors de la recherche du panier de l\'utilisateur');
+        }
+        resolve(findCartResult);
+      });
+    });
+
+    if (findCartResult.length > 0) {
+      // Mettez à jour la quantité du produit dans le panier
+      const updatedQuantity = findCartResult[0].quantite + quantity;
+      const updateCartQuery = 'UPDATE panier SET quantite = ? WHERE id = ?';
+      await new Promise((resolve, reject) => {
+        db.query(updateCartQuery, [updatedQuantity, findCartResult[0].id], (updateCartErr, updateCartResult) => {
+          if (updateCartErr) {
+            console.error(updateCartErr);
+            reject('Erreur lors de la mise à jour du panier');
+          }
+          resolve();
+        });
+      });
+
+      res.status(200).send(`Quantité mise à jour avec succès (${updatedQuantity})`);
+    } else {
+      res.status(404).send('Produit non trouvé dans le panier');
+    }
+  } catch (error) {
+    console.error('Erreur lors de la mise à jour de la quantité du produit dans le panier:', error);
+    res.status(500).send('Erreur lors de la mise à jour de la quantité du produit dans le panier');
+  }
+});
+
 
 
 app.get('/user', (req, res) => {
@@ -164,8 +243,6 @@ app.post('/connexion', (req, res) => {
 app.post('/user', (req, res) => {
   const { nom, prenom, email, mdp } = req.body;
   const sqlUser = 'INSERT INTO user (nom, prenom, email, mdp) VALUES (?, ?, ?, ?)';
-  const sqlCreateUserCart = 'INSERT INTO panier (utilisateur_id) VALUES (LAST_INSERT_ID())';
-  const sqlGetLastUserId = 'SELECT LAST_INSERT_ID() as lastUserId';
 
   db.query(sqlUser, [nom, prenom, email, mdp], (errUser, resultUser) => {
     if (errUser) {
@@ -173,27 +250,9 @@ app.post('/user', (req, res) => {
       return res.status(500).json(errUser);
     }
 
-    db.query(sqlGetLastUserId, (errUserId, resultUserId) => {
-      if (errUserId) {
-        console.error('Erreur lors de la récupération de l\'ID de l\'utilisateur :', errUserId);
-        return res.status(500).json(errUserId);
-      }
-
-      const userId = resultUserId[0].lastUserId;
-
-      db.query(sqlCreateUserCart, (errCart, resultCart) => {
-        if (errCart) {
-          console.error('Erreur lors de la création du panier pour l\'utilisateur :', errCart);
-          return res.status(500).json(errCart);
-        }
-
-        return res.status(200).json({ message: 'Utilisateur enregistré avec succès' });
-      });
-    });
+    return res.status(200).json({ message: 'Utilisateur enregistré avec succès' });
   });
 });
-
-
 
 
 

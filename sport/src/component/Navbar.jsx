@@ -37,7 +37,6 @@ import {
     Navigate('/Accueil');
     window.location.reload();
     setUserRole('');
-    fetchCartDetails();
   };
 
   const handleScroll = () => {
@@ -86,42 +85,7 @@ import {
     setShowLike(false);
   }
 
-// ...
-
-const fetchCartDetails = async () => {
-  try {
-    const userId = Cookies.get('iduser');
-    if (!userId) {
-      console.error('L\'ID de l\'utilisateur est manquant ou nul.');
-      return;
-    }
-
-    // Récupérez les détails du panier via la route getCart existante
-    const cartResponse = await axios.get(`http://localhost:3001/getCart?utilisateur_id=${userId}`);
-    console.log('Cart Response:', cartResponse.data); // Ajoutez cette ligne pour déboguer
-
-    if (cartResponse.status === 200) {
-      const updatedCart = cartResponse.data;
-
-      // Récupérez les détails des produits du panier via une nouvelle route getProducts
-      const productsResponse = await axios.post('http://localhost:3001/getProducts', { cart: updatedCart });
-
-      if (productsResponse.status === 200) {
-        const cartWithDetails = productsResponse.data;
-        setCart(cartWithDetails);
-        saveCartToLocalStorage(cartWithDetails);
-      }
-    }
-  } catch (error) {
-    console.error('Error fetching cart details:', error);
-  }
-};
-
-useEffect(() => {
-  fetchCartDetails();
-}, []); // Assurez-vous que cette dépendance est correctement gérée
-console.log('Cart:', cart); // Ajoutez cette ligne pour déboguer
-
+  
 // ...
 
   useEffect(() => {
@@ -227,6 +191,7 @@ console.log('Cart:', cart); // Ajoutez cette ligne pour déboguer
                   <h4>{item.nomProduit}</h4>
                   <p> Taille:XS</p>
                   <p>{item.prix}.00 €</p>
+                  <p>quantité: {item.quantite}</p>
                   </div>
                   <div className='close-like-panier'>
                   <button onClick={() => removeFromCart(item.id)}><img src={close} alt="" /></button>
