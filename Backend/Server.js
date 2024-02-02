@@ -34,8 +34,6 @@ const storage = multer.diskStorage({
 });
 app.post('/addToCart', async (req, res) => {
   const { utilisateur_id, produit_id } = req.body;
-
-  // Récupérer le prix du produit depuis la table produits
   const getProductPriceQuery = 'SELECT prix FROM produits WHERE id = ?';
   db.query(getProductPriceQuery, [produit_id], (getPriceErr, getPriceResult) => {
     if (getPriceErr) {
@@ -45,7 +43,6 @@ app.post('/addToCart', async (req, res) => {
 
     const produit_prix = getPriceResult[0].prix;
 
-    // Vérifier si l'utilisateur a déjà un panier existant avec ce produit
     const findCartQuery = 'SELECT id, quantite, prix FROM panier WHERE utilisateur_id = ? AND produit_id = ?';
     db.query(findCartQuery, [utilisateur_id, produit_id], (findCartErr, findCartResult) => {
       if (findCartErr) {
@@ -54,7 +51,6 @@ app.post('/addToCart', async (req, res) => {
       }
 
       if (findCartResult.length > 0) {
-        // Mise à jour de la quantité du produit existant
         const updatedQuantity = findCartResult[0].quantite + 1;
         const updatedTotalPrice = findCartResult[0].prix + produit_prix;
         const updateCartQuery = 'UPDATE panier SET quantite = ?, prix = ? WHERE id = ?';
@@ -68,7 +64,6 @@ app.post('/addToCart', async (req, res) => {
           res.status(200).send('Produit ajouté au panier avec succès !');
         });
       } else {
-        // Ajouter le produit au panier avec la quantité initial 1 et le prix du produit
         const addToCartQuery = 'INSERT INTO panier (utilisateur_id, produit_id, quantite, prix) VALUES (?, ?, 1, ?)';
         db.query(addToCartQuery, [utilisateur_id, produit_id, produit_prix], (addToCartErr, addToCartResult) => {
           if (addToCartErr) {
@@ -127,7 +122,6 @@ app.post('/getProducts', async (req, res) => {
   }
 });
 
-// Dans votre fichier serveur
 app.post('/removeFromCart', async (req, res) => {
   const { utilisateur_id, produit_id } = req.body;
 

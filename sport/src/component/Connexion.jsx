@@ -6,7 +6,11 @@ import { useNavigate } from 'react-router-dom';
 import { useCart } from './Context';
 import bcrypt from 'bcryptjs';
 import Cookies from 'js-cookie';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 const Connexion = () => {
+  const notify = () => toast("Wow so easy!");
   const [nom, setNom] = useState('');
   const [prenom, setPrenom] = useState('');
   const [email, setEmail] = useState('');
@@ -60,7 +64,6 @@ const Connexion = () => {
 
   const handleLoginSubmit = async (event) => {
     event.preventDefault();
-  
     const userData = {
       emailUser: emailUser, 
       passwordUser: passwordUser, 

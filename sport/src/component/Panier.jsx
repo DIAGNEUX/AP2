@@ -3,6 +3,8 @@ import '../css/Panier.css';
 import { useCart } from './Context';
 import close from '../Assets/icons/close.png';
 import like from '../Assets/icons/like_icons.png';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 const localhost = "http://localhost:3001";
 
 const Panier = () => {

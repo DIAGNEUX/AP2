@@ -16,7 +16,7 @@ export const CartProvider = ({ children }) => {
       }
 
       const cartResponse = await axios.get(`http://localhost:3001/getCart?utilisateur_id=${userId}`);
-      console.log('Cart Response:', cartResponse.data); // Ajoutez cette ligne pour déboguer
+      console.log('Cart Response:', cartResponse.data); 
   
       if (cartResponse.status === 200) {
         const updatedCart = cartResponse.data;
@@ -81,7 +81,6 @@ export const CartProvider = ({ children }) => {
   
         if (cartResponse.status === 200) {
           const updatedCart = cartResponse.data;
-          // Modifier ici pour inclure le nom, l'image et le prix dans chaque élément du panier
           const detailedCart = await axios.post('http://localhost:3001/getProducts', { cart: updatedCart });
           setCart(detailedCart.data);
         }
