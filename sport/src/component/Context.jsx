@@ -71,13 +71,13 @@ export const CartProvider = ({ children }) => {
         return;
       }
   
-      const response = await axios.post('http://localhost:3001/addToCart', {
+      const response = await axios.post('http://localhost:3001/api/cart', {
         utilisateur_id: userId,
         produit_id: product.id,
       });
   
       if (response.status === 200) {
-        const cartResponse = await axios.get(`http://localhost:3001/getCart?utilisateur_id=${userId}`);
+        const cartResponse = await axios.get(`http://localhost:3001/api/cart?utilisateur_id=${userId}`);
   
         if (cartResponse.status === 200) {
           const updatedCart = cartResponse.data;
@@ -99,7 +99,7 @@ export const CartProvider = ({ children }) => {
       });
   
       if (response.status === 200) {
-        const updatedCart = await axios.get(`http://localhost:3001/getCart?utilisateur_id=${userId}`);
+        const updatedCart = await axios.get(`http://localhost:3001/api/cart/${userId}`);
         const detailedCart = await axios.post('http://localhost:3001/getProducts', { cart: updatedCart.data });
         setCart(detailedCart.data);
       } else {

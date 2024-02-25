@@ -36,7 +36,7 @@ const Connexion = () => {
     const userData = {nom, prenom, email, mdp:hashedPassword };
 
     try {
-      const response = await fetch('http://localhost:3001/user', {
+      const response = await fetch('http://localhost:3001/api/users/createuser', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -71,7 +71,7 @@ const Connexion = () => {
     console.log(userData);
   
     try {
-      const response = await fetch('http://localhost:3001/connexion', {
+      const response = await fetch('http://localhost:3001/api/users/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

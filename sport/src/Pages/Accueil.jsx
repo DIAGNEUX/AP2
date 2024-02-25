@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { motion } from 'framer-motion';
 import { 
-  leftbg, man, woman, child,
-  Data, Back, Forward, bag, like,
+  leftbg, man, woman, child, 
+  Back, Forward, bag, like,
   baniere, running, basket, football,
   tennis, training ,Produit
 } from '../importation/Import';
@@ -21,11 +21,13 @@ import { useCart } from '../component/Context';
 export const Accueil = () => {
   const [bestSellers , setBestSellers] = useState([])
   const [newcollection , setnewcollection] = useState([])
-  const API = "http://localhost:3001/produits/bestSellers";
-  const NewcollectionAPI = "http://localhost:3001/newcollection";
+  const API = "http://localhost:3001/api/products/best-sellers";
+  const NewcollectionAPI = "http://localhost:3001/api/products/same/Under%20Armour%20Haut%20Zipp%C3%A9%20Tech%20Homme";
   const localhost = "http://localhost:3001"
   const [category, setCategory] = useState('all');
   const { addToCart: addToCartContext } = useCart()
+  const encodedImageUrl = encodeURIComponent("http://localhost:3001/uploads/image-1700136110235-Nike Haut de survêtement zippé Running Pacer Femme 1.webp");
+
 
   useEffect(() => {
     axios.get(NewcollectionAPI)
@@ -237,7 +239,7 @@ export const Accueil = () => {
                   <Link to={`/ProduitDetails/${populaire.nomProduit}/${populaire.id}`}>
                  <img src={`${localhost}/uploads/${populaire.images.split(',')[0]}`} alt="" />
                  <img className='BackImg' src={`${localhost}/uploads/${populaire.images.split(',')[1]}`} alt="" />
-                 </Link> 
+                 </Link>
                  </>
                  ) : (
                 <img src={`${localhost}/uploads/default-image.jpg`} alt="Default" />

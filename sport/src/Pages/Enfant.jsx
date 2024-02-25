@@ -16,9 +16,9 @@ export const Enfant = () => {
   const [minPrice, setMinPrice] = useState(10);
   const [maxPrice, setMaxPrice] = useState(500);
   const [HommeProduit , setHommeProduit]=useState([])
-  const API = "http://localhost:3001/produits/enfant";
-  const API_H_vetements = "http://localhost:3001/produits/enfant/vetements";
-  const API_H_chaussure = "http://localhost:3001/produits/enfant/chaussure";
+  const API = "http://localhost:3001/api/products/category/enfant";
+  const API_H_vetements = "http://localhost:3001/api/products/category/enfant/vetements";
+  const API_H_chaussure = "http://localhost:3001/api/products/category/enfant/chaussure";
   const localhost = "http://localhost:3001"
   const { category } = useParams();
   const [selectedCategory, setSelectedCategory] = useState(category)

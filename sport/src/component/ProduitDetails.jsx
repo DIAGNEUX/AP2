@@ -13,7 +13,7 @@ export const ProduitDetails = () => {
     const [ProduitsSimilaires, setProduitsSimilaires] = useState([]);
     const { nomProduit , id } = useParams();
     const produit = HommeProduit.find(item => item.nomProduit === nomProduit && item.id == id);  
-    const API = "http://localhost:3001/produits";
+    const API = "http://localhost:3001/api/products";
     const localhost = "http://localhost:3001";
     const [TailleSelect, setTailleSelect] = useState('');
     const [Showproduit, setShowProduit] = useState({ displayedImage: 'default-image.jpg' });
@@ -26,9 +26,10 @@ export const ProduitDetails = () => {
     useEffect(() => {
         if (produit) {
           axios
-            .get(`http://localhost:3001/produits/meme?nomProduit=${produit.nomProduit}&id=${produit.id}`)
+            .get(`http://localhost:3001/api/products/same/${produit.nomProduit}`)
             .then((res) => {
               setProduitsSimilaires(res.data);
+              console.log(res.data);
             })
             .catch((error) => {
               console.error('Erreur lors de la récupération des produits similaires :', error);
@@ -50,7 +51,6 @@ export const ProduitDetails = () => {
       }, []); 
       
   
- 
   const handleAddToCart = () => {
     if (produit) {
       addToCart(produit); 

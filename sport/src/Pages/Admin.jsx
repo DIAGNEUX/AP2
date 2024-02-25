@@ -28,8 +28,8 @@ export const Admin = () => {
   const handleMenuClick = (menuItem) => {
     setSelectedMenuItem(menuItem);
   };
-  const produitsAPI = "http://localhost:3001/produits";
-  const usersAPI = "http://localhost:3001/user";
+  const produitsAPI = "http://localhost:3001/api/products";
+  const usersAPI = "http://localhost:3001/api/users";
 
   useEffect(() => {
     axios.get(produitsAPI)

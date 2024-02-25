@@ -3,18 +3,16 @@ const app = express();
 const port = 3001;
 const db = require('./dbb/connexion');
 const cors = require('cors');
+const bodyParser = require('body-parser');
+const userRoutes = require('./Routes/UserRoutes'); // Importez le routeur des utilisateurs
+const productRouter = require('./Routes/ProductRoutes');
+const panierRouter = require('./Routes/PanierRoutes');
 const multer = require('multer');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-
-
 
 app.use(express.json());
 app.use(cors());
 
 app.use('/uploads', express.static('../sport/uploads'));
-
-
 
 const fileFilter = (req, file, callback) => {
   if (file.mimetype.startsWith('image/')) {
@@ -32,51 +30,58 @@ const storage = multer.diskStorage({
     callback(null, `image-${Date.now()}-${file.originalname}`);
   },
 });
-app.post('/addToCart', async (req, res) => {
-  const { utilisateur_id, produit_id } = req.body;
-  const getProductPriceQuery = 'SELECT prix FROM produits WHERE id = ?';
-  db.query(getProductPriceQuery, [produit_id], (getPriceErr, getPriceResult) => {
-    if (getPriceErr) {
-      console.error(getPriceErr);
-      return res.status(500).send('Erreur lors de la récupération du prix du produit');
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: fileFilter, 
+});
+
+app.use(express.json());
+
+// Middleware pour gérer les requêtes CORS
+app.use(cors());
+
+// Middleware pour analyser les corps de requête au format JSON
+app.use(bodyParser.json());
+
+// Middleware pour les routes liées aux utilisateurs
+app.use('/api/users', userRoutes);
+
+// Middleware pour les routes liées aux produits
+app.use('/api/products', productRouter);
+
+// Middleware pour les routes liées au panier
+app.use('/api/cart', panierRouter);
+
+
+
+app.post('/api/products', upload.array('images', 5), (req, res) => {
+  try {
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ error: 'No files uploaded.' });
     }
 
-    const produit_prix = getPriceResult[0].prix;
+    const { nomProduit, description, categorie, couleur, taille, promo, cateType , prix } = req.body;
+    const imagePaths = req.files.map((file) => file.filename).join(',');
 
-    const findCartQuery = 'SELECT id, quantite, prix FROM panier WHERE utilisateur_id = ? AND produit_id = ?';
-    db.query(findCartQuery, [utilisateur_id, produit_id], (findCartErr, findCartResult) => {
-      if (findCartErr) {
-        console.error(findCartErr);
-        return res.status(500).send('Erreur lors de la recherche du panier de l\'utilisateur');
-      }
-
-      if (findCartResult.length > 0) {
-        const updatedQuantity = findCartResult[0].quantite + 1;
-        const updatedTotalPrice = findCartResult[0].prix + produit_prix;
-        const updateCartQuery = 'UPDATE panier SET quantite = ?, prix = ? WHERE id = ?';
-        db.query(updateCartQuery, [updatedQuantity, updatedTotalPrice, findCartResult[0].id], (updateCartErr, updateCartResult) => {
-          if (updateCartErr) {
-            console.error(updateCartErr);
-            return res.status(500).send('Erreur lors de la mise à jour du panier');
-          }
-
-          console.log('Produit ajouté au panier avec succès !');
-          res.status(200).send('Produit ajouté au panier avec succès !');
-        });
+    const sql = 'INSERT INTO produits (nomProduit, images, description, categorie, couleur, taille, promo, cateType , prix) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+    db.query(sql, [nomProduit, imagePaths, description, categorie, couleur, taille, promo, cateType, prix], (err, result) => {
+      if (err) {
+        console.error(err);
+        res.status(500).send('Erreur lors de l\'insertion ');
       } else {
-        const addToCartQuery = 'INSERT INTO panier (utilisateur_id, produit_id, quantite, prix) VALUES (?, ?, 1, ?)';
-        db.query(addToCartQuery, [utilisateur_id, produit_id, produit_prix], (addToCartErr, addToCartResult) => {
-          if (addToCartErr) {
-            console.error(addToCartErr);
-            return res.status(500).send('Erreur lors de l\'ajout du produit au panier');
-          }
-          console.log('Produit ajouté au panier avec succès !');
-          res.status(200).send('Produit ajouté au panier avec succès !');
-        });
+        console.log(result);
+        res.status(200).send('Article ajouté avec succès !');
       }
     });
-  });
+  } catch (error) {
+    console.error('Error handling file upload:', error);
+    res.status(500).send('Internal Server Error');
+  }
 });
+
+
+
 app.get('/getCart', (req, res) => {
   const utilisateur_id = req.query.utilisateur_id;
 
@@ -121,30 +126,6 @@ app.post('/getProducts', async (req, res) => {
     res.status(500).send('Erreur lors de la récupération des détails des produits du panier');
   }
 });
-
-app.post('/removeFromCart', async (req, res) => {
-  const { utilisateur_id, produit_id } = req.body;
-
-  try {
-    // Effectuez la suppression du produit du panier dans la base de données
-    const removeFromCartQuery = 'DELETE FROM panier WHERE utilisateur_id = ? AND produit_id = ?';
-    await new Promise((resolve, reject) => {
-      db.query(removeFromCartQuery, [utilisateur_id, produit_id], (removeErr, removeResult) => {
-        if (removeErr) {
-          console.error(removeErr);
-          reject('Erreur lors de la suppression du produit du panier');
-        }
-        resolve();
-      });
-    });
-
-    res.status(200).send('Produit supprimé du panier avec succès !');
-  } catch (error) {
-    console.error('Erreur lors de la suppression du produit du panier:', error);
-    res.status(500).send('Erreur lors de la suppression du produit du panier');
-  }
-});
-// Dans votre fichier serveur
 app.post('/updateCartItemQuantity', async (req, res) => {
   const { utilisateur_id, produit_id, quantity } = req.body;
 
@@ -184,246 +165,29 @@ app.post('/updateCartItemQuantity', async (req, res) => {
     res.status(500).send('Erreur lors de la mise à jour de la quantité du produit dans le panier');
   }
 });
+app.post('/removeFromCart', async (req, res) => {
+  const { utilisateur_id, produit_id } = req.body;
 
-
-
-app.get('/user', (req, res) => {
-  const sql = 'SELECT * FROM user';
-  db.query(sql, (err, data) => {
-    if (err) {
-      console.error('Erreur lors de la sélection des utilisateurs :', err);
-      return res.status(500).json(err);
-    }
-    return res.json(data);
-  });
-})
-
-app.post('/connexion', (req, res) => {
-  const { emailUser, passwordUser } = req.body;
-  
-  if (!emailUser || !passwordUser) {
-    return res.status(400).json({ message: 'Veuillez remplir tous les champs' });
-  } else {
-    const sql = 'SELECT * FROM user WHERE email = ?';
-    db.query(sql, [emailUser], async (err, data) => {
-      if (err) {
-        console.error('Erreur lors de la sélection des utilisateurs :', err);
-        return res.status(500).json({ message: 'Erreur serveur' });
-      }
-
-      if (data.length === 0) {
-        return res.status(401).json({ message: 'Identifiants incorrects' });
-      }
-
-      const user = data[0];
-      const hashedPassword = user.mdp;
-
-      const passwordMatch = await bcrypt.compare(passwordUser, hashedPassword);
-      if (!passwordMatch) {
-        return res.status(401).json({ message: 'Identifiants incorrects' });
-      }
-      
-      const userData = {
-        id: user.id,
-        nom: user.nom,
-        prenom: user.prenom,
-        role: user.role 
-      };
-
-      return res.json(userData);
-    });
-  }
-});
-app.post('/user', (req, res) => {
-  const { nom, prenom, email, mdp } = req.body;
-  const sqlUser = 'INSERT INTO user (nom, prenom, email, mdp) VALUES (?, ?, ?, ?)';
-
-  db.query(sqlUser, [nom, prenom, email, mdp], (errUser, resultUser) => {
-    if (errUser) {
-      console.error('Erreur lors de l\'insertion de l\'utilisateur :', errUser);
-      return res.status(500).json(errUser);
-    }
-
-    return res.status(200).json({ message: 'Utilisateur enregistré avec succès' });
-  });
-});
-
-
-
-const upload = multer({
-  storage: storage,
-  limits: { fileSize: 5 * 1024 * 1024 },
-  fileFilter: fileFilter, 
-});
-
-app.get('/produits', (req, res) => {
-  const sql = 'SELECT * FROM produits ORDER BY id ASC';
-  db.query(sql, (err, data) => {
-    if (err) {
-      console.error('Erreur lors de la récupération des produits :', err);
-      return res.status(500).json(err);
-    }
-    return res.json(data);
-  });
-});
-app.get('/produits/promo', (req, res) => {
-  const sql = 'SELECT * FROM produits where promo > 0';
-  db.query(sql, (err, data) => {
-    if (err) {
-      console.error('Erreur lors de la récupération des produits :', err);
-      return res.status(500).json(err);
-    }
-    return res.json(data);
-  });
-});
-app.get('/produits/bestSellers', (req, res) => {
-  const sql = 'SELECT * FROM produits WHERE best = "best" ORDER BY id ASC ';
-  db.query(sql, (err, data) => {
-    if (err) {
-      console.error('Erreur lors de la récupération des produits :', err);
-      return res.status(500).json(err);
-    }
-    return res.json(data);
-  });
-});
-app.get('/produits/:categorie/:typeProduit', (req, res) => {
-  const { categorie, typeProduit } = req.params;
-  const sql = 'SELECT * FROM produits WHERE categorie = ? AND cateType = ?';
-  db.query(sql, [categorie, typeProduit], (err, data) => {
-    if (err) {
-      console.error('Erreur lors de la récupération des produits :', err);
-      return res.status(500).json(err);
-    }
-    return res.json(data);
-  });
-});
-
-
-app.get('/produits/meme', (req, res) => {
-  const nomProduit = req.query.nomProduit;
-  const sql = `SELECT * FROM produits WHERE  nomProduit = ?`;
-  db.query(sql, [nomProduit], (err, data) => {
-    if (err) {
-      console.error('Error executing SQL query:', err);
-      return res.status(500).json(err);
-    }
-
-    console.log('Query result:', data);
-    return res.json(data);
-  });
-});
-
-app.get('/produits/:categorie', (req, res) => {
-  const categorie = req.params.categorie;
-  const sql = 'SELECT * FROM produits WHERE categorie = ?';
-  db.query(sql, [categorie], (err, data) => {
-    if (err) return res.status(500).json(err);
-    return res.json(data);
-  });
-});
-
-app.get('/produits/:id', (req, res) => {
-  const productId = req.params.id;
-  const sql = 'SELECT * FROM produits WHERE id = ?';
-  db.query(sql, [productId], (err, data) => {
-    if (err) return res.status(500).json(err);
-    return res.json(data);
-  });
-});
-
-app.get('/newcollection', (req, res) => {
-  const sql = 'SELECT * FROM produits WHERE nomProduit = "Under Armour Haut Zippé Tech Homme"';
-  db.query(sql, (err, data) => {
-    if (err) {
-      console.error('Erreur lors de la récupération des produits :', err);
-      return res.status(500).json(err);
-    }
-    return res.json(data);
-  });
-});
-
-app.post('/produits', upload.array('images', 5), (req, res) => {
   try {
-    if (!req.files || req.files.length === 0) {
-      return res.status(400).json({ error: 'No files uploaded.' });
-    }
-
-    const { nomProduit, description, categorie, couleur, taille, promo, cateType , prix } = req.body;
-    const imagePaths = req.files.map((file) => file.filename).join(',');
-
-    const sql = 'INSERT INTO produits (nomProduit, images, description, categorie, couleur, taille, promo, cateType , prix) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
-    db.query(sql, [nomProduit, imagePaths, description, categorie, couleur, taille, promo, cateType, prix], (err, result) => {
-      if (err) {
-        console.error(err);
-        res.status(500).send('Erreur lors de l\'insertion ');
-      } else {
-        console.log(result);
-        res.status(200).send('Article ajouté avec succès !');
-      }
+    // Effectuez la suppression du produit du panier dans la base de données
+    const removeFromCartQuery = 'DELETE FROM panier WHERE utilisateur_id = ? AND produit_id = ?';
+    await new Promise((resolve, reject) => {
+      db.query(removeFromCartQuery, [utilisateur_id, produit_id], (removeErr, removeResult) => {
+        if (removeErr) {
+          console.error(removeErr);
+          reject('Erreur lors de la suppression du produit du panier');
+        }
+        resolve();
+      });
     });
+
+    res.status(200).send('Produit supprimé du panier avec succès !');
   } catch (error) {
-    console.error('Error handling file upload:', error);
-    res.status(500).send('Internal Server Error');
+    console.error('Erreur lors de la suppression du produit du panier:', error);
+    res.status(500).send('Erreur lors de la suppression du produit du panier');
   }
 });
-
-app.delete('/produits/:id', (req, res) => {
-  const productId = req.params.id;
-
-  const sql = 'DELETE FROM produits WHERE id = ?';
-  db.query(sql, [productId], (err, result) => {
-    if (err) {
-      console.error(err);
-      res.status(500).send('Erreur lors de la suppression du produit.');
-    } else {
-      console.log(result);
-      res.status(200).send('Produit supprimé avec succès !');
-    }
-  });
-});
-
-app.put('/produits/:id', upload.array('images', 5), (req, res) => {
-  const productId = req.params.id;
-  const { nomProduit, description, categorie, couleur, taille, promo, cateType, prix } = req.body;
-  let newImagePaths = [];
-  if (req.files && req.files.length > 0) {
-    newImagePaths = req.files.map((file) => file.filename);
-  }
-  const updateInfoSql = 'UPDATE produits SET nomProduit=?, description=?, categorie=?, couleur=?, taille=?, promo=?, cateType=?, prix=? WHERE id=?';
-  const updateInfoParams = [nomProduit, description, categorie, couleur, taille, promo, cateType, prix, productId];
-
-  db.query(updateInfoSql, updateInfoParams, (infoErr, infoResult) => {
-    if (infoErr) {
-      console.error(infoErr);
-      res.status(500).send('Erreur lors de la mise à jour du produit.');
-    } else {
-      if (newImagePaths.length > 0) {
-        const updateImagesSql = 'UPDATE produits SET images=? WHERE id=?';
-        const updatedImagePaths = [...newImagePaths]; 
-
-        db.query(updateImagesSql, [updatedImagePaths.join(','), productId], (imageErr, imageResult) => {
-          if (imageErr) {
-            console.error(imageErr);
-            res.status(500).send('Erreur lors de la mise à jour des images du produit.');
-          } else {
-            console.log(imageResult);
-            res.status(200).send('Produit et images mis à jour avec succès !');
-          }
-        });
-      } else {
-        console.log(infoResult);
-        res.status(200).send('Produit mis à jour avec succès !');
-      }
-    }
-  });
-});
-
-
-
-
-
+// Écoute du port
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`);
 });
-
-
