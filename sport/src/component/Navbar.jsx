@@ -141,7 +141,7 @@ import {
         <div className='wrap-con-btn'>
         {isLoggedIn ? (
           <div>
-            <button>{userName}</button> 
+            <button><Link to="/Profil">{userName}</Link></button> 
             <button onClick={handleLogout} >Se déconnecter</button> 
           </div>
         ) : (

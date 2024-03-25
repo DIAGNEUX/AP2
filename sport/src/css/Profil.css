@@ -1,0 +1,138 @@
+:root{
+    --color: #ffc800 ;
+}
+*{
+    color: black;
+}
+.wrap-Admin{
+    padding-top:74px ;
+
+}
+.Admin {
+    width: 100%;
+    display: flex;
+    position: relative;
+    
+} 
+.Admin .sidebar{
+    width:20%;
+    height: calc(100vh - 70px);
+    background: var(--color);
+    position: fixed;
+}
+.Admin .sidebar ul{
+    padding: 10px;
+}
+.Admin .sidebar ul li{
+    padding: 10px 15px;
+    font-size: 18px;
+    margin:10px 0;
+    display: flex;
+    cursor: pointer;
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+}
+.Admin .sidebar ul li img{
+    width: 20px;
+    height: 20px;
+    opacity: 0.6;
+    margin-right: 10px;
+
+}
+.lesproduits{
+    width: 80%;
+    margin-left: 20%;
+}
+.container {
+	display:flex;
+	justify-content:center;
+	align-items:center;
+	min-height:100vh;
+}
+
+.table-header {
+	display:flex;
+	width:100%;
+	border-bottom: 1px solid grey;;
+	
+}
+
+.table-row {
+	display:flex;
+    align-items: center;
+    justify-content: center;
+    width:100%;
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+    margin: 10px 0;
+}
+
+.display-commande{
+    padding: 5px;
+    border-radius: 20px;
+    margin: 5px;
+
+}
+.product-item{
+    border: 1px solid green;
+    padding: 10px;
+    display: flex;
+    
+}
+.Mask-produit{
+    display: none;
+}
+.product-image img{
+    width: 100px;
+    height: 100px;
+}
+.product-details{
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 30px;
+}
+.product-details p:first-child{
+    font-size: 18px;
+    font-weight: bold;
+    width: 200px;
+}
+.note{
+    margin: 10px 0;
+}
+.note p{
+    margin: 10px ;
+}
+.note p span{
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.viewcommand{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+}
+.total{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.total p{
+    font-size: 18px;
+    font-weight: bold;
+}
+.total button{
+    background: green;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 20px;
+}
+.header{
+    border: 1px solid black;
+    border-radius: 10px;
+    margin: 10px 0;
+}

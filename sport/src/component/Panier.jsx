@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState , useEffect } from 'react';
 import '../css/Panier.css';
 import { useCart } from './Context';
 import close from '../Assets/icons/close.png';
@@ -9,7 +9,31 @@ const localhost = "http://localhost:3001";
 
 const Panier = () => {
   const { cart, removeFromCart, updateCartItemQuantity } = useCart();
-  const [quantite, setQuantite] = useState(cart.map(() => 1));
+  const [orderNote, setOrderNote] = useState('');
+  const [orderComment, setOrderComment] = useState('');
+
+  const [orderHistory, setOrderHistory] = useState([]);
+  const userId = document.cookie.replace(/(?:(?:^|.*;\s*)iduser\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+  console.log(userId);
+
+    useEffect(() => {
+        fetchOrderHistory();
+    }, []);
+
+    const fetchOrderHistory = async () => {
+        try {
+            const response = await fetch('http://localhost:3001/PasserCommande');
+            if (response.ok) {
+                const data = await response.json();
+                setOrderHistory(data); 
+            } else {
+                console.error('Failed to fetch order history');
+            }
+        } catch (error) {
+            console.error('Error fetching order history:', error);
+        }
+    };
+
 
   const incrementQuantity = (productId) => {
     updateCartItemQuantity(productId, 1);
@@ -21,18 +45,49 @@ const Panier = () => {
 
   const calculatTotalPrice = () => {
     let totalPrice = 0;
-    cart.forEach(item => {
+    cart.forEach((item) => {
       totalPrice += item.prix * item.quantite;
     });
     return totalPrice;
   };
-console.log(cart)
+
+  const handlePasserCommande = async () => {
+   
+    const commandDetails = {
+      userId: userId, 
+      products: cart.map(item => ({ productId: item.id, quantity: item.quantite })),
+      note: orderNote,
+      commentaire: orderComment
+    };
+  
+    try {
+      const response = await fetch('http://localhost:3001/passerCommande', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(commandDetails),
+      });
+  
+      if (response.ok) {
+        console.log('Commande passée avec succès !');
+        setOrderNote('');
+        setOrderComment('');
+      } else {
+        console.error('Erreur lors de la commande : ', response.statusText);
+      }
+    } catch (error) {
+      console.error('Erreur lors de la commande : ', error);
+    }
+  };
+  
+ 
+
   return (
     <div className='Wrap-Panier'>
       <div className='Panier'>
         <div className='Left-Panier'>
           {cart.map((item) => (
-            <>
             <div className='in-Left-Panier' key={item.id}>
               <div className='produit-panier'>
                 <div>
@@ -69,12 +124,7 @@ console.log(cart)
                 <button><img src={like} alt="" /></button>
               </div>
             </div>
-           
-
-            <hr key={`hr-${item.id}`} />
-            </>
           ))}
-          
         </div>
         <div className='Right-Panier'>
           <div className='in-Right-Panier'>
@@ -84,9 +134,23 @@ console.log(cart)
             <hr />
             <h1>Total prix : {calculatTotalPrice().toFixed(2)} €</h1>
             <hr />
+            <div className='form-note'>
+              <input
+              placeholder="Ajouter une note à la commande"
+              type="number"
+              value={orderNote}
+              onChange={(e) => setOrderNote(e.target.value)}
+              name="" id="" />
+          
+            <textarea
+              placeholder="Ajouter un commentaire à la commande"
+              value={orderComment}
+              onChange={(e) => setOrderComment(e.target.value)}
+            />
+            </div>
           </div>
           <div className='lesbtn-Right-Panier'>
-            <button>Passer ma commande</button>
+            <button onClick={handlePasserCommande}>Passer ma commande</button>
           </div>
         </div>
       </div>

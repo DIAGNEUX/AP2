@@ -42,7 +42,7 @@
 .Right-Panier{
     background-color: rgb(226, 226, 226);
     width: 30%;
-    height: 300px;
+    height: 400px;
     position: relative;
     margin: 10px;
     padding: 10px;
@@ -110,4 +110,18 @@
 }
 .quantite-restante{
     font-weight: bold;
+}
+.form-note{
+    width: 100%;
+}
+.form-note input ,.form-note textarea{
+    width: 100%;
+    height: 40px;
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid black;
+} 
+.form-note textarea{
+    height: 80px;
 }

@@ -1,3 +1,59 @@
+{/* <div className='Left-Panier'>
+          {cart.map((item) => (
+            <div className='in-Left-Panier' key={item.id}>
+              <div className='produit-panier'>
+                <div>
+                  {item.images && item.images.length > 0 ? (
+                    <img className='img-cart' src={`${localhost}/uploads/${item.images.split(',')[0]}`} alt="" />
+                  ) : (
+                    <img className='img-cart' src={`${localhost}/uploads/default-image.jpg`} alt="Default" />
+                  )}
+                </div>
+                <div>
+                  <h4>{item.nomProduit}</h4>
+                  <p>{item.prix}.00 €</p>
+                  <div className='quantite-restante'>
+                   {item.quantite > item.Quantité
+                     ? 'Quantité invalide'
+                     : `restante en stock : ${item.Quantité - item.quantite}`}
+                 </div>
+                </div>
+              </div>
+              <div className='quantité'>
+                <p>quantité</p>
+                <div className='increment'>
+                <button
+                onClick={() => decrementQuantity(item.id)}
+                disabled={item.quantite === 1}
+                >-</button>
+                  {item.quantite}
+                  <button onClick={() => incrementQuantity(item.id)} disabled={item.quantite >= item.Quantité}>+</button>
+                </div>
+              </div>
+              <div className='prix-produit'>{item.prix * item.quantite}.00 €</div>
+              <div className='lesbtn-paniers'>
+                <button onClick={() => removeFromCart(item.id)}><img src={close} alt="" /></button>
+                <button><img src={like} alt="" /></button>
+              </div>
+            </div>
+          ))}
+        </div> */}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // const express = require('express');
 // const app = express();
 // const port = 3001;

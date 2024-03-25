@@ -12,6 +12,7 @@ import { Admin } from '../Pages/Admin'
 import { ProduitDetails } from '../component/ProduitDetails'
 import Panier from '../component/Panier'
 import { Essai } from '../Pages/Essai'
+import { Profil } from '../Pages/Profil'
 
 export const Way = () => {
   return (
@@ -30,6 +31,7 @@ export const Way = () => {
           <Route path="/Admin" element={<Admin/>} />
           <Route path="/Panier" element={<Panier/>} />
           <Route path="/Essai" element={<Essai/>} />
+          <Route path="/Profil" element={<Profil/>} />
         </Routes>
     </div>
   )

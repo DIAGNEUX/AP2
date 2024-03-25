@@ -3,11 +3,13 @@ const app = express();
 const port = 3001;
 const db = require('./dbb/connexion');
 const cors = require('cors');
+const multer = require('multer');
 const bodyParser = require('body-parser');
-const userRoutes = require('./Routes/UserRoutes'); // Importez le routeur des utilisateurs
+
+const userRoutes = require('./Routes/UserRoutes'); 
 const productRouter = require('./Routes/ProductRoutes');
 const panierRouter = require('./Routes/PanierRoutes');
-const multer = require('multer');
+
 
 app.use(express.json());
 app.use(cors());
@@ -44,16 +46,11 @@ app.use(cors());
 // Middleware pour analyser les corps de requête au format JSON
 app.use(bodyParser.json());
 
-// Middleware pour les routes liées aux utilisateurs
 app.use('/api/users', userRoutes);
-
-// Middleware pour les routes liées aux produits
 app.use('/api/products', productRouter);
-
-// Middleware pour les routes liées au panier
 app.use('/api/cart', panierRouter);
 
-
+const localhost = "http://localhost:3001"
 
 app.post('/api/products', upload.array('images', 5), (req, res) => {
   try {
@@ -95,6 +92,90 @@ app.get('/getCart', (req, res) => {
     res.status(200).json(getCartResult);
   });
 });
+
+app.post('/passerCommande', async (req, res) => {
+  try {
+      const { userId, products, note, commentaire } = req.body;
+
+      const userOrderHistoryQuery = 'SELECT * FROM commande WHERE utilisateur_id = ?';
+      const userOrderHistory = await new Promise((resolve, reject) => {
+          db.query(userOrderHistoryQuery, [userId], (err, result) => {
+              if (err) {
+                  console.error(err);
+                  reject('Erreur lors de la récupération de l\'historique des commandes de l\'utilisateur');
+              } else {
+                  resolve(result);
+              }
+          });
+      });
+
+      const commandeInsertQuery = 'INSERT INTO commande (utilisateur_id, note, commentaire) VALUES (?, ?, ?)';
+      await new Promise((resolve, reject) => {
+          db.query(commandeInsertQuery, [userId, note, commentaire], async (err, result) => {
+              if (err) {
+                  console.error(err);
+                  reject('Erreur lors de l\'insertion de la nouvelle commande');
+              } else {
+                  for (const product of products) {
+                      const { productId, quantity } = product;
+                      const commandeProduitInsertQuery = 'INSERT INTO commande_produit (commande_id, produit_id, quantite) VALUES (?, ?, ?)';
+                      await new Promise((resolve, reject) => {
+                          db.query(commandeProduitInsertQuery, [result.insertId, productId, quantity], (err, result) => {
+                              if (err) {
+                                  console.error(err);
+                                  reject('Erreur lors de l\'ajout du produit à la commande');
+                              } else {
+                                  resolve();
+                              }
+                          });
+                      });
+                  }
+                  resolve();
+              }
+          });
+      });
+
+      res.status(200).json({ orderHistory: userOrderHistory, message: 'Commande passée avec succès' });
+  } catch (error) {
+      console.error('Erreur lors du passage de la commande :', error);
+      res.status(500).send('Une erreur s\'est produite lors du passage de la commande');
+  }
+});
+app.get('/api/user-history/:userId', async (req, res) => {
+  try {
+    const userId = req.params.userId;
+
+    const userOrderHistoryQuery = `
+      SELECT 
+        c.id AS commande_id,
+        cp.produit_id,
+        p.nomProduit,
+        p.prix,
+        p.images,
+        cp.quantite,
+        c.note,
+        c.commentaire
+      FROM commande c
+      JOIN commande_produit cp ON c.id = cp.commande_id
+      JOIN produits p ON cp.produit_id = p.id
+      WHERE c.utilisateur_id = ?;
+    `;
+
+    db.query(userOrderHistoryQuery, [userId], (err, result) => {
+      if (err) {
+        console.error('Erreur lors de la récupération de l\'historique des commandes de l\'utilisateur:', err);
+        res.status(500).send('Erreur lors de la récupération de l\'historique des commandes de l\'utilisateur');
+      } else {
+        res.status(200).json(result);
+      }
+    });
+  } catch (error) {
+    console.error('Erreur lors de la récupération de l\'historique des commandes de l\'utilisateur:', error);
+    res.status(500).send('Erreur lors de la récupération de l\'historique des commandes de l\'utilisateur');
+  }
+});
+
+
 
 app.post('/getProducts', async (req, res) => {
   try {
@@ -188,6 +269,6 @@ app.post('/removeFromCart', async (req, res) => {
   }
 });
 // Écoute du port
-app.listen(port, () => {
+module.exports = app.listen(port, () => {
   console.log(`Server listening on port ${port}`);
 });
