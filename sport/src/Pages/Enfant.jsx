@@ -19,7 +19,7 @@ export const Enfant = () => {
   const API = "http://192.168.1.33:3001/api/products/category/enfant";
   const API_H_vetements = "http://192.168.1.33:3001/api/products/category/enfant/vetements";
   const API_H_chaussure = "http://192.168.1.33:3001/api/products/category/enfant/chaussure";
-  const localhost = "http://192.168.1.33:3001/"
+  const localhost = "http://192.168.1.33:3001"
   const { category } = useParams();
   const [selectedCategory, setSelectedCategory] = useState(category)
   const { addToCart: addToCartContext } = useCart()
