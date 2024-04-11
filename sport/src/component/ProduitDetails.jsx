@@ -13,8 +13,8 @@ export const ProduitDetails = () => {
     const [ProduitsSimilaires, setProduitsSimilaires] = useState([]);
     const { nomProduit , id } = useParams();
     const produit = HommeProduit.find(item => item.nomProduit === nomProduit && item.id == id);  
-    const API = "http://localhost:3001/api/products";
-    const localhost = "http://localhost:3001";
+    const API = "http://192.168.1.33:3001/api/products";
+    const localhost = "http://192.168.1.33:3001";
     const [TailleSelect, setTailleSelect] = useState('');
     const [Showproduit, setShowProduit] = useState({ displayedImage: 'default-image.jpg' });
     const handleClickImage = (image) => {
@@ -26,7 +26,7 @@ export const ProduitDetails = () => {
     useEffect(() => {
         if (produit) {
           axios
-            .get(`http://localhost:3001/api/products/same/${produit.nomProduit}`)
+            .get(`http://192.168.1.33:3001/api/products/same/${produit.nomProduit}`)
             .then((res) => {
               setProduitsSimilaires(res.data);
               console.log(res.data);

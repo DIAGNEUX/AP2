@@ -5,7 +5,7 @@ import close from '../Assets/icons/close.png';
 import like from '../Assets/icons/like_icons.png';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-const localhost = "http://localhost:3001";
+const localhost = "http://192.168.1.33:3001";
 
 const Panier = () => {
   const { cart, removeFromCart, updateCartItemQuantity } = useCart();
@@ -22,7 +22,7 @@ const Panier = () => {
 
     const fetchOrderHistory = async () => {
         try {
-            const response = await fetch('http://localhost:3001/PasserCommande');
+            const response = await fetch('http://192.168.1.33:3001/PasserCommande');
             if (response.ok) {
                 const data = await response.json();
                 setOrderHistory(data); 
@@ -61,7 +61,7 @@ const Panier = () => {
     };
   
     try {
-      const response = await fetch('http://localhost:3001/passerCommande', {
+      const response = await fetch('http://192.168.1.33:3001/passerCommande', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
