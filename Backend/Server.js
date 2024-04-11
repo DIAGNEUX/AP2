@@ -15,28 +15,59 @@ app.use(express.json());
 app.use(cors());
 
 app.use('/uploads', express.static('../sport/uploads'));
+const MIME_TYPES = {
+  'image/jpg': 'jpg',
+  'image/jpeg': 'jpg',
+  'image/png': 'png',
+};
+
+// Chemin de l'image par défaut
+const defaultImagePath = 'image_default_image.jpg';
 
 const fileFilter = (req, file, callback) => {
   if (file.mimetype.startsWith('image/')) {
     callback(null, true);
   } else {
-    callback(new Error('upload une image.'), false);
+    console.error('Type MIME non pris en charge :', file.mimetype);
+    // Utilisez l'image par défaut si le type MIME n'est pas pris en charge
+    req.fileValidationError = 'Type MIME non pris en charge';
+    req.defaultImageUsed = true; // Indique que l'image par défaut est utilisée
+    callback(null, true); // Permet le téléchargement malgré le type MIME non pris en charge
   }
 };
 
 const storage = multer.diskStorage({
   destination: (req, file, callback) => {
-    callback(null, '../sport/uploads');
+    if (req.defaultImageUsed) {
+      // Si l'image par défaut est utilisée, pas besoin de sauvegarder le fichier
+      return callback(null, ''); // Ne sauvegarde pas le fichier
+    } else {
+      callback(null, '../sport/uploads');
+    }
   },
+
   filename: (req, file, callback) => {
-    callback(null, `image-${Date.now()}-${file.originalname}`);
+    if (req.defaultImageUsed) {
+      // Utilisez le nom de fichier de l'image par défaut
+      callback(null, defaultImagePath);
+    } else {
+      const extension = MIME_TYPES[file.mimetype];
+      if (!extension) {
+        callback(new Error('Type MIME non pris en charge'), false);
+      } else {
+        callback(null, `image-${Date.now()}-${file.originalname}.${extension}`);
+      }
+    }
   },
 });
+
+
 const upload = multer({
   storage: storage,
   limits: { fileSize: 5 * 1024 * 1024 },
-  fileFilter: fileFilter, 
+  fileFilter: fileFilter,
 });
+
 
 app.use(express.json());
 
@@ -55,27 +86,38 @@ const localhost = "http://localhost:3001"
 app.post('/api/products', upload.array('images', 5), (req, res) => {
   try {
     if (!req.files || req.files.length === 0) {
+      console.log('Aucun fichier téléchargé.');
       return res.status(400).json({ error: 'No files uploaded.' });
     }
 
-    const { nomProduit, description, categorie, couleur, taille, promo, cateType , prix } = req.body;
-    const imagePaths = req.files.map((file) => file.filename).join(',');
+    console.log('Fichiers téléchargés:', req.files);
+    const mimeTypes = req.files.map(file => file.mimetype);
+    console.log('MimeTypes des images sélectionnées :', mimeTypes);
 
-    const sql = 'INSERT INTO produits (nomProduit, images, description, categorie, couleur, taille, promo, cateType , prix) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+    const { nomProduit, description, categorie, couleur, taille, promo, cateType, prix } = req.body;
+    console.log('Données du produit:', { nomProduit, description, categorie, couleur, taille, promo, cateType, prix });
+
+    const imagePaths = req.files.map((file) => file.filename).join(',');
+    console.log('Chemins des images:', imagePaths);
+
+    const sql = 'INSERT INTO produits (nomProduit, images, description, categorie, couleur, taille, promo, cateType, prix) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
     db.query(sql, [nomProduit, imagePaths, description, categorie, couleur, taille, promo, cateType, prix], (err, result) => {
       if (err) {
-        console.error(err);
+        console.error('Erreur lors de l\'insertion dans la base de données:', err);
         res.status(500).send('Erreur lors de l\'insertion ');
       } else {
-        console.log(result);
+        console.log('Résultat de l\'insertion:', result);
         res.status(200).send('Article ajouté avec succès !');
       }
     });
   } catch (error) {
-    console.error('Error handling file upload:', error);
+    console.error('Erreur lors du traitement de l\'envoi:', error);
     res.status(500).send('Internal Server Error');
   }
 });
+
+
+
 
 
 
@@ -174,6 +216,44 @@ app.get('/api/user-history/:userId', async (req, res) => {
     res.status(500).send('Erreur lors de la récupération de l\'historique des commandes de l\'utilisateur');
   }
 });
+app.get('/api/admin-all-orders', async (req, res) => {
+  try {
+    const allOrdersQuery = `
+      SELECT 
+        c.id AS commande_id,
+        c.utilisateur_id,
+        u.nom AS nom_utilisateur,
+        GROUP_CONCAT(cp.produit_id) AS produit_ids,
+        GROUP_CONCAT(p.nomProduit) AS noms_produits,
+        GROUP_CONCAT(p.prix) AS prix_produits,
+        GROUP_CONCAT(p.images) AS images_produits,
+        GROUP_CONCAT(cp.quantite) AS quantites_produits,
+        c.note,
+        c.commentaire,
+        c.status
+      FROM commande c
+      JOIN commande_produit cp ON c.id = cp.commande_id
+      JOIN produits p ON cp.produit_id = p.id
+      JOIN user u ON c.utilisateur_id = u.id
+      GROUP BY c.id
+      ORDER BY c.id DESC; 
+    `;
+
+    db.query(allOrdersQuery, (err, result) => {
+      if (err) {
+        console.error('Erreur lors de la récupération de toutes les commandes:', err);
+        res.status(500).send('Erreur lors de la récupération de toutes les commandes');
+      } else {
+        res.status(200).json(result);
+      }
+    });
+  } catch (error) {
+    console.error('Erreur lors de la récupération de toutes les commandes:', error);
+    res.status(500).send('Erreur lors de la récupération de toutes les commandes');
+  }
+});
+
+
 
 
 
