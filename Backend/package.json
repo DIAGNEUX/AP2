@@ -4,7 +4,8 @@
   "description": "",
   "main": "Server.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "start": "node Server.js"
   },
   "author": "",
   "license": "ISC",
