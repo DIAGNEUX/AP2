@@ -13,7 +13,7 @@ export const ProduitDetails = () => {
     const [ProduitsSimilaires, setProduitsSimilaires] = useState([]);
     const { nomProduit , id } = useParams();
     const produit = HommeProduit.find(item => item.nomProduit === nomProduit && item.id == id);  
-    const API = "http://192.168.1.33:3001/api/products";
+    const API = "http://192.168.1.33:3001/api/admin/products";
     const localhost = "http://192.168.1.33:3001";
     const [TailleSelect, setTailleSelect] = useState('');
     const [Showproduit, setShowProduit] = useState({ displayedImage: 'default-image.jpg' });

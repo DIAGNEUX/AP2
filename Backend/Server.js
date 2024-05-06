@@ -25,6 +25,7 @@ app.use(isAdmin);
 app.use('/uploads', express.static('../sport/uploads'));
 
 
+
 const defaultImagePath = 'image_default_image.jpg';
 
 const fileFilter = (req, file, callback) => {
