@@ -16,10 +16,10 @@ export const Homme = () => {
   const [minPrice, setMinPrice] = useState(10);
   const [maxPrice, setMaxPrice] = useState(500);
   const [HommeProduit , setHommeProduit]=useState([])
-  const API = "http://192.168.1.33:3001/api/products/category/homme";
-  const API_H_vetements = "http://192.168.1.33:3001/api/products/category/homme/vetements";
-  const API_H_chaussure = "http://192.168.1.33:3001/api/products/category/homme/chaussure";
-  const localhost = "http://192.168.1.33:3001"
+  const API = "http://localhost:3001/api/products/category/homme";
+  const API_H_vetements = "http://localhost:3001/api/products/category/homme/vetements";
+  const API_H_chaussure = "http://localhost:3001/api/products/category/homme/chaussure";
+  const localhost = "http://localhost:3001"
   const { category } = useParams();
   const [selectedCategory, setSelectedCategory] = useState(category)
   const { addToCart: addToCartContext } = useCart()

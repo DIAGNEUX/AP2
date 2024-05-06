@@ -71,29 +71,32 @@ const Connexion = () => {
     console.log(userData);
   
     try {
-      const response = await fetch('http://192.168.1.33:3001/api/users/login', {
+      const response = await fetch('http://localhost:3001/api/users/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(userData),
+        // credentials: 'include',
       });
   
       if (response.ok) {
         const data = await response.json();
         console.log(data.role);
         console.log('Connecté avec succès');
+        
         setEmailUser('');
         setPasswordUser('');
         Cookies.set('userRole', data.role, { expires: 7 }); 
         Cookies.set('userNom', data.nom, { expires: 7 })
         Cookies.set('iduser', data.id, { expires: 7 })
         console.log(data.nom)
-        if (data.role === 1) {
+        const userRole = parseInt(data.role);
+        if (userRole === 1) {
           navigate('/Admin');
-          console.log(data.role)
+          console.log(userRole)
           window.location.reload()
-        } else if (data.role === 0) {
+        } else if (userRole === 0) {
           navigate('/Accueil');
           window.location.reload()
         } else {

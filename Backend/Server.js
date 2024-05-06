@@ -5,59 +5,42 @@ const db = require('./dbb/connexion');
 const cors = require('cors');
 const multer = require('multer');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
+const isAdmin = require('./Middleware/middleware');
 
 const userRoutes = require('./Routes/UserRoutes'); 
 const productRouter = require('./Routes/ProductRoutes');
 const panierRouter = require('./Routes/PanierRoutes');
-
+const adminRouter = require('./Routes/AdminRoutes');
+// const corsOptions = {
+//   origin: 'http://localhost:3000', // Remplacez ceci par l'URL de votre application frontend
+//   credentials: true, // Autoriser l'envoi de cookies
+// };
 
 app.use(express.json());
 app.use(cors());
+app.use(cookieParser());
 
+app.use(isAdmin);
 app.use('/uploads', express.static('../sport/uploads'));
-const MIME_TYPES = {
-  'image/jpg': 'jpg',
-  'image/jpeg': 'jpg',
-  'image/png': 'png',
-};
 
-// Chemin de l'image par défaut
+
 const defaultImagePath = 'image_default_image.jpg';
 
 const fileFilter = (req, file, callback) => {
   if (file.mimetype.startsWith('image/')) {
     callback(null, true);
   } else {
-    console.error('Type MIME non pris en charge :', file.mimetype);
-    // Utilisez l'image par défaut si le type MIME n'est pas pris en charge
-    req.fileValidationError = 'Type MIME non pris en charge';
-    req.defaultImageUsed = true; // Indique que l'image par défaut est utilisée
-    callback(null, true); // Permet le téléchargement malgré le type MIME non pris en charge
+    callback(new Error('Type MIME non pris en charge'), false); 
   }
 };
 
 const storage = multer.diskStorage({
   destination: (req, file, callback) => {
-    if (req.defaultImageUsed) {
-      // Si l'image par défaut est utilisée, pas besoin de sauvegarder le fichier
-      return callback(null, ''); // Ne sauvegarde pas le fichier
-    } else {
-      callback(null, '../sport/uploads');
-    }
+    callback(null, '../sport/uploads');
   },
-
   filename: (req, file, callback) => {
-    if (req.defaultImageUsed) {
-      // Utilisez le nom de fichier de l'image par défaut
-      callback(null, defaultImagePath);
-    } else {
-      const extension = MIME_TYPES[file.mimetype];
-      if (!extension) {
-        callback(new Error('Type MIME non pris en charge'), false);
-      } else {
-        callback(null, `image-${Date.now()}-${file.originalname}.${extension}`);
-      }
-    }
+    callback(null, `image-${Date.now()}-${file.originalname}`);
   },
 });
 
@@ -71,47 +54,40 @@ const upload = multer({
 
 app.use(express.json());
 
-// Middleware pour gérer les requêtes CORS
 app.use(cors());
 
-// Middleware pour analyser les corps de requête au format JSON
 app.use(bodyParser.json());
+
+
+
 
 app.use('/api/users', userRoutes);
 app.use('/api/products', productRouter);
 app.use('/api/cart', panierRouter);
+app.use('/api/admin', adminRouter);
 
-const localhost = "http://localhost:3001"
 
-app.post('/api/products', upload.array('images', 5), (req, res) => {
+app.post('/api/product', upload.array('images', 5), (req, res) => {
   try {
     if (!req.files || req.files.length === 0) {
-      console.log('Aucun fichier téléchargé.');
       return res.status(400).json({ error: 'No files uploaded.' });
     }
 
-    console.log('Fichiers téléchargés:', req.files);
-    const mimeTypes = req.files.map(file => file.mimetype);
-    console.log('MimeTypes des images sélectionnées :', mimeTypes);
-
-    const { nomProduit, description, categorie, couleur, taille, promo, cateType, prix } = req.body;
-    console.log('Données du produit:', { nomProduit, description, categorie, couleur, taille, promo, cateType, prix });
-
+    const { nomProduit, description, categorie, couleur, taille, promo, cateType , prix } = req.body;
     const imagePaths = req.files.map((file) => file.filename).join(',');
-    console.log('Chemins des images:', imagePaths);
 
-    const sql = 'INSERT INTO produits (nomProduit, images, description, categorie, couleur, taille, promo, cateType, prix) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+    const sql = 'INSERT INTO produits (nomProduit, images, description, categorie, couleur, taille, promo, cateType , prix) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
     db.query(sql, [nomProduit, imagePaths, description, categorie, couleur, taille, promo, cateType, prix], (err, result) => {
       if (err) {
-        console.error('Erreur lors de l\'insertion dans la base de données:', err);
+        console.error(err);
         res.status(500).send('Erreur lors de l\'insertion ');
       } else {
-        console.log('Résultat de l\'insertion:', result);
+        console.log(result);
         res.status(200).send('Article ajouté avec succès !');
       }
     });
   } catch (error) {
-    console.error('Erreur lors du traitement de l\'envoi:', error);
+    console.error('Error handling file upload:', error);
     res.status(500).send('Internal Server Error');
   }
 });
@@ -119,6 +95,44 @@ app.post('/api/products', upload.array('images', 5), (req, res) => {
 
 
 
+app.put('/api/product/:id', upload.array('images', 5), (req, res) => {
+  const productId = req.params.id;
+  const { nomProduit, description, categorie, couleur, taille, promo, cateType, prix } = req.body;
+
+  console.log(req.body);
+
+  let newImagePaths = [];
+  if (req.files && req.files.length > 0) {
+    newImagePaths = req.files.map((file) => file.filename);
+  }
+  const updateInfoSql = 'UPDATE produits SET nomProduit=?, description=?, categorie=?, couleur=?, taille=?, promo=?, cateType=?, prix=? WHERE id=?';
+  const updateInfoParams = [nomProduit, description, categorie, couleur, taille, promo, cateType, prix, productId];
+
+  db.query(updateInfoSql, updateInfoParams, (infoErr, infoResult) => {
+    if (infoErr) {
+      console.error(infoErr);
+      res.status(500).send('Erreur lors de la mise à jour du produit.');
+    } else {
+      if (newImagePaths.length > 0) {
+        const updateImagesSql = 'UPDATE produits SET images=? WHERE id=?';
+        const updatedImagePaths = [...newImagePaths]; 
+
+        db.query(updateImagesSql, [updatedImagePaths.join(','), productId], (imageErr, imageResult) => {
+          if (imageErr) {
+            console.error(imageErr);
+            res.status(500).send('Erreur lors de la mise à jour des images du produit.');
+          } else {
+            console.log(imageResult);
+            res.status(200).send('Produit et images mis à jour avec succès !');
+          }
+        });
+      } else {
+        console.log(infoResult);
+        res.status(200).send('Produit mis à jour avec succès !');
+      }
+    }
+  });
+});
 
 
 app.get('/getCart', (req, res) => {
@@ -216,7 +230,7 @@ app.get('/api/user-history/:userId', async (req, res) => {
     res.status(500).send('Erreur lors de la récupération de l\'historique des commandes de l\'utilisateur');
   }
 });
-app.get('/api/admin-all-orders', async (req, res) => {
+app.get('/api/admin-all-orders', isAdmin, async (req, res) => {
   try {
     const allOrdersQuery = `
       SELECT 

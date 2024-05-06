@@ -21,12 +21,12 @@ import { useCart } from '../component/Context';
 export const Accueil = () => {
   const [bestSellers , setBestSellers] = useState([])
   const [newcollection , setnewcollection] = useState([])
-  const API = "http://192.168.1.33:3001/api/products/best-sellers";
-  const NewcollectionAPI = "http://192.168.1.33:3001/api/products/same/Under%20Armour%20Haut%20Zipp%C3%A9%20Tech%20Homme";
-  const localhost = "http://192.168.1.33:3001"
+  const API = "http://localhost:3001/api/products/best-sellers";
+  const NewcollectionAPI = "http://localhost:3001/api/products/same/Under%20Armour%20Haut%20Zipp%C3%A9%20Tech%20Homme";
+  const localhost = "http://localhost:3001"
   const [category, setCategory] = useState('all');
   const { addToCart: addToCartContext } = useCart()
-  const encodedImageUrl = encodeURIComponent("http://192.168.1.33:3001/uploads/image-1700136110235-Nike Haut de survêtement zippé Running Pacer Femme 1.webp");
+  const encodedImageUrl = encodeURIComponent("http://localhost:3001/uploads/image-1700136110235-Nike Haut de survêtement zippé Running Pacer Femme 1.webp");
 
 
   useEffect(() => {

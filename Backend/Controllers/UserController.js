@@ -1,11 +1,19 @@
 const express = require('express');
 const db = require('../dbb/connexion');
 const bcrypt = require('bcrypt');
+const cookieParser = require('cookie-parser');
+const isAdmin = require('../Middleware/middleware');
 const app = express();
 const cors = require('cors');
 
 app.use(express.json());
 app.use(cors());
+
+
+
+app.use(cookieParser());
+
+
 
 
 
@@ -19,6 +27,7 @@ exports.getUsers = (req, res) => {
     return res.json(data);
   });
 };
+
 
 exports.loginUser = async (req, res) => {
   const { emailUser, passwordUser } = req.body;

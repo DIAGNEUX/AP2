@@ -6,7 +6,7 @@ import produit from "../Assets/icons/icons8-produit-50.png"
 import commande from "../Assets/icons/icons8-ordre-d'achat-50.png"
 import Cookies from 'js-cookie';
 export const Profil = () => {
-  const localhost = "http://192.168.1.33:3001";
+  const localhost = "http://localhost:3001";
   const [selectedMenuItem, setSelectedMenuItem] = useState('commande');
   const [showItem, setShowItem] = useState(false);
 
@@ -31,7 +31,7 @@ export const Profil = () => {
 
   const fetchUserOrderHistory = async (userId) => {
     try {
-      const response = await axios.get(`http://192.168.1.33:3001/api/user-history/${userId}`);
+      const response = await axios.get(`http://localhost:3001/api/user-history/${userId}`);
       setCommandes(response.data);
       console.log(response.data);
     } catch (error) {

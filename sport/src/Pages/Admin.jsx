@@ -9,7 +9,7 @@ import utilisateur from "../Assets/icons/icons8-utilisateur-50.png"
 import produit from "../Assets/icons/icons8-produit-50.png"
 import commande from "../Assets/icons/icons8-ordre-d'achat-50.png"
 export const Admin = () => {
-  const localhost = "http://192.168.1.33:3001/";
+  const localhost = "http://localhost:3001";
   const [nom, setNom] = useState('');
   const [description, setDescription] = useState('');
   const [couleur, setCouleur] = useState('');
@@ -28,8 +28,9 @@ export const Admin = () => {
   const handleMenuClick = (menuItem) => {
     setSelectedMenuItem(menuItem);
   };
-  const produitsAPI = "http://192.168.1.33:3001/api/products";
-  const usersAPI = "http://192.168.1.33:3001/api/users";
+  const produitsAPI = "http://localhost:3001/api/admin/products";
+  const usersAPI = "http://localhost:3001/api/admin/users";
+
 
   useEffect(() => {
     axios.get(produitsAPI)
@@ -70,7 +71,7 @@ export const Admin = () => {
       }
 
 
-      await axios.post(produitsAPI, formData);
+      await axios.post( 'http://localhost:3001/api/product', formData);
       setOverlayVisible(false);
       window.location.reload()
     } catch (error) {
@@ -120,15 +121,29 @@ export const Admin = () => {
       formData.append('cateType', cateType);
       formData.append('couleur', couleur);
       formData.append('taille', taille);
+
+      console.log("formData :", formData);
   
       if (images.length > 0) {
         images.forEach((image) => {
           formData.append('images', image);
         });
       }
+
+      console.log('Données à envoyer pour la mise à jour :', {
+        nomProduit: nom,
+        description: description,
+        prix: prix,
+        categorie: categorie,
+        promo: promo,
+        cateType: cateType,
+        couleur: couleur,
+        taille: taille,
+        images: images,
+      });
+      await axios.put(`http://localhost:3001/api/product/${editingProduct.id}`, formData);
+
   
-      await axios.put(`${produitsAPI}/${editingProduct.id}`, formData);
-     
       setProduits((prevProducts) =>
         prevProducts.map((product) =>
           product.id === editingProduct.id
@@ -136,13 +151,14 @@ export const Admin = () => {
             : product
         )
       );
-     
+  
       setOverlayVisible(false);
       setEditingProduct(null);
     } catch (error) {
-      console.error('Error updating product:', error);
+      console.error('Erreur lors de la mise à jour du produit :', error);
     }
   };
+  
   
 
   return (
@@ -287,7 +303,7 @@ export const Admin = () => {
                   </div>
                 </div>
                 <div className="center-submit">
-                  <input type="submit" value="Submit" />
+                  <input type="submit" value="Submit"  />
                 </div>
               </form>
               <div className="close-me">
