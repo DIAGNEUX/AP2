@@ -11,12 +11,12 @@ exports.getAllProducts =  (req, res) => {
     });
 };
 exports.getUsers = (req, res) => {
-    const sql = 'SELECT * FROM user';
-    db.query(sql, (err, data) => {
-      if (err) {
-        console.error('Erreur lors de la sélection des utilisateurs :', err);
-        return res.status(500).json(err);
-      }
-      return res.json(data);
-    });
-  };
+  const sql = 'SELECT nom, prenom, email FROM user';
+  db.query(sql, (err, data) => {
+    if (err) {
+      console.error('Erreur lors de la sélection des utilisateurs :', err);
+      return res.status(500).json(err);
+    }
+    return res.json(data);
+  });
+};

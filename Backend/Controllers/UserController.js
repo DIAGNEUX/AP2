@@ -14,19 +14,17 @@ app.use(cors());
 app.use(cookieParser());
 
 
+// exports.getUsers = (req, res) => {
+//   const sql = 'SELECT nom, prenom, email FROM user';
+//   db.query(sql, (err, data) => {
+//     if (err) {
+//       console.error('Erreur lors de la sélection des utilisateurs :', err);
+//       return res.status(500).json(err);
+//     }
+//     return res.json(data);
+//   });
+// };
 
-
-
-exports.getUsers = (req, res) => {
-  const sql = 'SELECT * FROM user';
-  db.query(sql, (err, data) => {
-    if (err) {
-      console.error('Erreur lors de la sélection des utilisateurs :', err);
-      return res.status(500).json(err);
-    }
-    return res.json(data);
-  });
-};
 
 
 exports.loginUser = async (req, res) => {
