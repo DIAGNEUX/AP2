@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1:3306
--- Généré le : lun. 25 mars 2024 à 13:50
+-- Généré le : jeu. 23 mai 2024 à 12:11
 -- Version du serveur : 8.0.31
 -- Version de PHP : 8.0.26
 
@@ -33,18 +33,25 @@ CREATE TABLE IF NOT EXISTS `commande` (
   `note` int DEFAULT NULL,
   `commentaire` text,
   `utilisateur_id` int DEFAULT NULL,
+  `status` varchar(50) NOT NULL DEFAULT 'En attente',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Déchargement des données de la table `commande`
 --
 
-INSERT INTO `commande` (`id`, `note`, `commentaire`, `utilisateur_id`) VALUES
-(5, 0, 'hdgsqhhj', 34),
-(6, 0, 'si je sais', 34),
-(7, 45325432, 'Les hwxjwx<schjwjwjx', 34),
-(8, 17, 'leo t\'en pense quoi', 34);
+INSERT INTO `commande` (`id`, `note`, `commentaire`, `utilisateur_id`, `status`) VALUES
+(5, 0, 'hdgsqhhj', 34, 'En attente'),
+(6, 0, 'si je sais', 34, 'Expédiée'),
+(7, 45325432, 'Les hwxjwx<schjwjwjx', 34, 'En attente'),
+(8, 17, 'leo t\'en pense quoi', 34, 'En attente'),
+(9, 10, 'vous êtes le meilleur', 39, 'Expédiée'),
+(10, 9, 'merci alioune', 39, 'Expédiée'),
+(11, 7, 'excellent', 39, 'En attente'),
+(12, 6, 'merci beaucou', 38, 'En attente'),
+(13, 8, 'felicitation', 38, 'Expédiée'),
+(14, 7, 'yeah yeah', 37, 'En attente');
 
 -- --------------------------------------------------------
 
@@ -61,7 +68,7 @@ CREATE TABLE IF NOT EXISTS `commande_produit` (
   PRIMARY KEY (`id`),
   KEY `commande_id` (`commande_id`),
   KEY `produit_id` (`produit_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=51 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Déchargement des données de la table `commande_produit`
@@ -78,7 +85,34 @@ INSERT INTO `commande_produit` (`id`, `commande_id`, `produit_id`, `quantite`) V
 (20, 7, 84, 1),
 (21, 7, 85, 1),
 (22, 8, 54, 1),
-(23, 8, 85, 1);
+(23, 8, 85, 1),
+(24, 9, 50, 2),
+(25, 9, 43, 2),
+(26, 9, 44, 1),
+(27, 9, 2, 1),
+(28, 9, 1, 1),
+(29, 10, 60, 1),
+(30, 10, 67, 1),
+(31, 10, 62, 1),
+(32, 10, 69, 1),
+(33, 10, 71, 1),
+(34, 11, 181, 1),
+(35, 11, 39, 1),
+(36, 11, 95, 1),
+(37, 11, 41, 1),
+(38, 12, 43, 1),
+(39, 12, 85, 1),
+(40, 12, 83, 1),
+(41, 12, 89, 1),
+(42, 13, 35, 1),
+(43, 13, 36, 1),
+(44, 13, 103, 1),
+(45, 13, 102, 1),
+(46, 14, 50, 1),
+(47, 14, 68, 2),
+(48, 14, 1, 1),
+(49, 14, 87, 1),
+(50, 14, 81, 1);
 
 -- --------------------------------------------------------
 
@@ -96,30 +130,21 @@ CREATE TABLE IF NOT EXISTS `panier` (
   PRIMARY KEY (`id`),
   KEY `fk_panier_produit` (`produit_id`),
   KEY `fk_panier_utilisateur` (`utilisateur_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=170 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=187 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Déchargement des données de la table `panier`
 --
 
 INSERT INTO `panier` (`id`, `utilisateur_id`, `produit_id`, `quantite`, `prix`) VALUES
-(109, 35, NULL, 1, NULL),
-(111, 35, 39, 2, NULL),
-(112, 35, 36, 1, NULL),
-(113, 35, 35, 1, NULL),
-(114, 35, 38, 1, NULL),
-(115, 35, 52, 1, NULL),
-(116, 36, NULL, 1, NULL),
 (117, 36, 1, 1, NULL),
 (118, 36, 2, 2, NULL),
 (119, 36, 50, 2, NULL),
-(120, 37, NULL, 1, NULL),
 (121, 37, 50, 1, NULL),
 (122, 37, 68, 2, NULL),
 (123, 37, 1, 1, NULL),
 (124, 37, 87, 1, NULL),
 (125, 37, 81, 1, NULL),
-(126, 35, 68, 2, NULL),
 (127, 35, 50, 1, NULL),
 (128, 36, 68, 1, NULL),
 (129, 36, 81, 2, NULL),
@@ -127,18 +152,16 @@ INSERT INTO `panier` (`id`, `utilisateur_id`, `produit_id`, `quantite`, `prix`) 
 (131, 35, 86, 1, NULL),
 (132, 35, 44, 1, NULL),
 (133, 35, 60, 1, NULL),
-(135, 39, 50, 2, NULL),
-(136, 39, 43, 2, NULL),
-(137, 39, 44, 1, NULL),
-(138, 39, 2, 1, NULL),
-(139, 39, 1, 1, NULL),
 (147, 40, 2, 2, 45),
 (155, 48, 50, 3, 360),
 (156, 48, 43, 2, 120),
 (159, 49, 43, 4, 120),
-(167, 34, 51, 1, 120),
 (168, 34, 50, 1, 120),
-(169, 34, 83, 1, 30);
+(169, 34, 83, 1, 30),
+(175, 39, 181, 1, 45),
+(176, 39, 39, 1, 70),
+(177, 39, 95, 1, 65),
+(178, 39, 41, 1, 60);
 
 -- --------------------------------------------------------
 
@@ -161,26 +184,24 @@ CREATE TABLE IF NOT EXISTS `produits` (
   `best` varchar(255) NOT NULL,
   `Quantité` int NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=186 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=194 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Déchargement des données de la table `produits`
 --
 
 INSERT INTO `produits` (`id`, `nomProduit`, `images`, `description`, `categorie`, `couleur`, `taille`, `promo`, `cateType`, `prix`, `best`, `Quantité`) VALUES
-(1, '', 'image-1700136110235-Nike Haut de survÃªtement zippÃ© Running Pacer Femme 1.webp,image-1700136110238-Nike Haut de survÃªtement zippÃ© Running Pacer Femme 2.webp,image-1700136110240-Nike Haut de survÃªtement zippÃ© Running Pacer Femme 3.webp,image-1700136110242-Nike Haut de survÃªtement zippÃ© Running Pacer Femme 4.webp,image-1700136110244-Nike Haut de survÃªtement zippÃ© Running Pacer Femme 5.webp', '', '', '', '', 0, '', 0, 'best', 20),
-(2, 'Nike Short Challenger 7 ', 'image-1700145953512-Nike Short Challenger 7 orange  Homme 1.webp,image-1700145953515-Nike Short Challenger 7 orange  Homme 2.webp,image-1700145953519-Nike Short Challenger 7 orange  Homme 3.webp,image-1700145953528-Nike Short Challenger 7 orange  Homme 4.webp', '', 'Homme', 'orange', 'XXS ,XS , S , M , L , XL , XXL', 0, 'vêtements', 45, 'best', 22),
-(35, 'chaussure copa pure3 terrain souple', 'image-1700228959660-chaussure-copa-pure3-terrain-souple 1.jpg,image-1700228959661-chaussure-copa-pure3-terrain-souple 3.jpg,image-1700228959664-chaussure-copa-pure3-terrain-souple 4.jpg,image-1700228959669-chaussure-copa-pure3-terrain-souple 5.jpg,image-1700228959674-chaussure-copa-pure3-terrain-souple Back.jpg', '', 'Enfant', 'noir', '27 , 28 , 29 , 30 , 31 , 32 , 33 , 34', 0, 'chaussure', 88, '', 20),
-(36, 'chaussures de football enfant a scratch 160 easy ', 'image-1700229804928-chaussures-de-football-enfant-a-scratch-160-easy-agfg-rouge 1.jpg,image-1700229804932-chaussures-de-football-enfant-a-scratch-160-easy-agfg-rouge 3.jpg,image-1700229804950-chaussures-de-football-enfant-a-scratch-160-easy-agfg-rouge 4.jpg,image-1700229804974-chaussures-de-football-enfant-a-scratch-160-easy-agfg-rouge 5.jpg,image-1700229805005-chaussures-de-football-enfant-a-scratch-160-easy-agfg-rouge Back.jpg', '', 'Enfant', 'rouge ', '27 , 28 , 29 , 30 , 31 , 32 , 33 , 34', 0, 'chaussure', 110, '', 15),
+(2, 'Nike Short Challenger 7', 'image-1713795277045-image-1700145953512-Nike Short Challenger 7 orange  Homme 1.webp,image-1713795277050-image-1700145953515-Nike Short Challenger 7 orange  Homme 2.webp,image-1713795277053-image-1700145953519-Nike Short Challenger 7 orange  Homme 3.webp,image-1713795277058-image-1700145953528-Nike Short Challenger 7 orange  Homme 4.webp', '', '', '', '', 0, '', 0, 'best', 22),
+(35, 'Crampon', 'image-1700228959660-chaussure-copa-pure3-terrain-souple 1.jpg,image-1700228959661-chaussure-copa-pure3-terrain-souple 3.jpg,image-1700228959664-chaussure-copa-pure3-terrain-souple 4.jpg,image-1700228959669-chaussure-copa-pure3-terrain-souple 5.jpg,image-1700228959674-chaussure-copa-pure3-terrain-souple Back.jpg', '', '', '', '', 0, '', 0, '', 20),
+(36, '', 'image-1700229804928-chaussures-de-football-enfant-a-scratch-160-easy-agfg-rouge 1.jpg,image-1700229804932-chaussures-de-football-enfant-a-scratch-160-easy-agfg-rouge 3.jpg,image-1700229804950-chaussures-de-football-enfant-a-scratch-160-easy-agfg-rouge 4.jpg,image-1700229804974-chaussures-de-football-enfant-a-scratch-160-easy-agfg-rouge 5.jpg,image-1700229805005-chaussures-de-football-enfant-a-scratch-160-easy-agfg-rouge Back.jpg', '', '', '', '', 0, '', 0, '', 15),
 (37, 'chaussures de football enfant a scratch viralto i easy', 'image-1699966088414-chaussures-de-football-enfant-a-scratch-viralto-i-easy-turf-tf-orange-et-bleu  Front.jpg,image-1699966088417-chaussures-de-football-enfant-a-scratch-viralto-i-easy-turf-tf-orange-et-bleu 3.jpg,image-1699966088433-chaussures-de-football-enfant-a-scratch-viralto-i-easy-turf-tf-orange-et-bleu 4.jpg,image-1699966088449-chaussures-de-football-enfant-a-scratch-viralto-i-easy-turf-tf-orange-et-bleu 5.jpg,image-1699966088468-chaussures-de-football-enfant-a-scratch-viralto-i-easy-turf-tf-orange-et-bleu Back.jpg', '', 'Enfant', 'orange', '27 , 28 , 29 , 30 , 31 , 32 , 33 , 34', 0, 'chaussure', 110, '', 23),
 (38, 'chaussures de running enfant adidas ultrabounce noires ', 'image-1699966258486-chaussures-de-running-enfant-adidas-ultrabounce-noires 3.jpg,image-1699966258493-chaussures-de-running-enfant-adidas-ultrabounce-noires 4.jpg,image-1699966258504-chaussures-de-running-enfant-adidas-ultrabounce-noires 5.jpg,image-1699966258523-chaussures-de-running-enfant-adidas-ultrabounce-noires Back.jpg,image-1699966258531-chaussures-de-running-enfant-adidas-ultrabounce-noires Front.jpg', '', 'Enfant', 'noir', '27 , 28 , 29 , 30 , 31 , 32 , 33 , 34', 0, 'chaussure', 100, '', 18),
 (39, 'chaussures de running garcon asics gt 1000 bleu 2023 ', 'image-1699966483958-chaussures-de-running-garcon-asics-gel-excite-10-bleu-orange 3.jpg,image-1699966483977-chaussures-de-running-garcon-asics-gel-excite-10-bleu-orange 4.jpg,image-1699966483991-chaussures-de-running-garcon-asics-gel-excite-10-bleu-orange 5.jpg,image-1699966484009-chaussures-de-running-garcon-asics-gel-excite-10-bleu-orange Back.jpg,image-1699966484019-chaussures-de-running-garcon-asics-gel-excite-10-bleu-orange Front.jpg', '', 'Enfant', 'bleu', '27 , 28 , 29 , 30 , 31 , 32 , 33 , 34', 20, 'chaussure', 70, '', 17),
 (40, 'Asics GT-1000 Junior', 'image-1700229721991-Asics GT 1000 junior 01.jpg,image-1700229721991-Asics GT 1000 junior 2.webp,image-1700229721995-Asics GT 1000 junior 3.webp,image-1700229721999-Asics GT 1000 junior 4.webp,image-1700229722001-Asics GT 1000 junior 5.webp', '', 'Enfant', 'noir', '27 , 28 , 29 , 30 , 31 , 32 , 33 , 34', 10, 'chaussure', 80, '', 20),
 (41, 'reebok-rush-runner-4 ', 'image-1699966769525-reebok-rush-runner-4 3.jpg,image-1699966769534-reebok-rush-runner-4 4.jpg,image-1699966769543-reebok-rush-runner-4 5.jpg,image-1699966769554-reebok-rush-runner-4 Back.jpg,image-1699966769562-reebok-rush-runner-4 Front.jpg', '', 'Enfant', 'noir', '27 , 28 , 29 , 30 , 31 , 32 , 33 , 34', 0, 'chaussure', 60, '', 10),
 (42, 'chaussures de running garcon fille adidas duramo ', 'image-1699967282245-chaussures-de-running-garcon-fille-adidas-duramo-sl-enfants-jaune 3.jpg,image-1699967282261-chaussures-de-running-garcon-fille-adidas-duramo-sl-enfants-jaune 4.jpg,image-1699967282279-chaussures-de-running-garcon-fille-adidas-duramo-sl-enfants-jaune 5.jpg', '', 'Enfant', 'jaune', '27 , 28 , 29 , 30 , 31 , 32 , 33 , 34', 0, 'chaussure', 30, '', 15),
-(43, 'chaussure de trail running salomon-sense-ride ', 'image-1699967695375-chaussure-de-trail-running-salomon-sense-ride-5-m-grey-red 3.jpg,image-1699967695390-chaussure-de-trail-running-salomon-sense-ride-5-m-grey-red 4.jpg,image-1699967695407-chaussure-de-trail-running-salomon-sense-ride-5-m-grey-red 5.jpg,image-1699967695433-chaussure-de-trail-running-salomon-sense-ride-5-m-grey-red Back.jpg,image-1699967695443-chaussure-de-trail-running-salomon-sense-ride-5-m-grey-red Front.jpg', '', 'Homme', 'rouge', '39, 40 , 41 , 42 , 43 , 44 , 45 , 46', 0, 'chaussure', 120, '', 8),
 (44, 'chaussures de trail running man', 'image-1699967827209-chaussures-de-trail-running-man noir 3.jpg,image-1699967827233-chaussures-de-trail-running-man noir 4.jpg,image-1699967827250-chaussures-de-trail-running-man noir 5.jpg,image-1699967827256-chaussures-de-trail-running-man noir Back.jpg,image-1699967827266-chaussures-de-trail-running-man noir Front.jpg', '', 'Homme', 'noir', '39, 40 , 41 , 42 , 43 , 44 , 45 , 46', 45, 'chaussure', 140, '', 20),
-(45, 'chaussures de trail running pour homme race ultra  ', 'image-1699968099553-chaussures-de-trail-running-pour-homme-race-ultra-orange-et-noir 3.jpg,image-1699968099567-chaussures-de-trail-running-pour-homme-race-ultra-orange-et-noir 4.jpg,image-1699968099579-chaussures-de-trail-running-pour-homme-race-ultra-orange-et-noir 5.jpg,image-1699968099592-chaussures-de-trail-running-pour-homme-race-ultra-orange-et-noir Back.jpg,image-1699968099606-chaussures-de-trail-running-pour-homme-race-ultra-orange-et-noir Front.jpg', '', 'Homme', 'orange', '39, 40 , 41 , 42 , 43 , 44 , 45 , 46', 30, 'chaussure', 150, '', 50),
+(45, 'chaussures de trail running pour homme race ultra', 'image-1699968099553-chaussures-de-trail-running-pour-homme-race-ultra-orange-et-noir 3.jpg,image-1699968099567-chaussures-de-trail-running-pour-homme-race-ultra-orange-et-noir 4.jpg,image-1699968099579-chaussures-de-trail-running-pour-homme-race-ultra-orange-et-noir 5.jpg,image-1699968099592-chaussures-de-trail-running-pour-homme-race-ultra-orange-et-noir Back.jpg,image-1699968099606-chaussures-de-trail-running-pour-homme-race-ultra-orange-et-noir Front.jpg', '', 'Homme', 'bleu', '39, 40 , 41 , 42 , 43 , 44 , 45 , 46', 30, 'chaussure', 158, '', 50),
 (48, 'chaussures running homme brooks glycerin 20', 'image-1699968450273-chaussures-running-homme-brooks-glycerin-20-noir-bleu 3.jpg,image-1699968450284-chaussures-running-homme-brooks-glycerin-20-noir-bleu 4.jpg,image-1699968450308-chaussures-running-homme-brooks-glycerin-20-noir-bleu 5.jpg,image-1699968450322-chaussures-running-homme-brooks-glycerin-20-noir-bleu Back.jpg,image-1699968450334-chaussures-running-homme-brooks-glycerin-20-noir-bleu Front.jpg', '', 'Homme', 'noir', '39, 40 , 41 , 42 , 43 , 44 , 45 , 46', 0, 'chaussure', 80, '', 15),
 (49, 'chaussures running homme gel pulse 14', 'image-1699968605346-chaussures-running-homme-gel-pulse-14-h-bleu 3.jpg,image-1699968605360-chaussures-running-homme-gel-pulse-14-h-bleu 4.jpg,image-1699968605390-chaussures-running-homme-gel-pulse-14-h-bleu 5.jpg,image-1699968605421-chaussures-running-homme-gel-pulse-14-h-bleu Back.jpg,image-1699968605428-chaussures-running-homme-gel-pulse-14-h-bleu Front.jpg', '', 'Homme', 'bleu', '39, 40 , 41 , 42 , 43 , 44 , 45 , 46', 0, 'chaussure', 95, '', 28),
 (50, 'chaussures running homme kiprun', 'image-1700227011275-chaussures-running-homme-kiprun-bleu 1.jpg,image-1700227011281-chaussures-running-homme-kiprun-bleu 3.jpg,image-1700227011286-chaussures-running-homme-kiprun-bleu 4.jpg,image-1700227011295-chaussures-running-homme-kiprun-bleu 5.jpg,image-1700227011302-chaussures-running-homme-kiprun-bleu Back.jpg', '', 'Homme', 'bleu', '39, 40 , 41 , 42 , 43 , 44 , 45 , 46', 0, 'chaussure', 120, 'best', 6),
@@ -205,7 +226,7 @@ INSERT INTO `produits` (`id`, `nomProduit`, `images`, `description`, `categorie`
 (73, 'adidas Legging Optime Power ', 'image-1700137409243-adidas Legging Optime Power  1.webp,image-1700137409246-adidas Legging Optime Power 2.webp,image-1700137409250-adidas Legging Optime Power 3.webp,image-1700137409258-adidas Legging Optime Power 4.webp', '', 'Femme', 'orange', 'XXS ,XS , S , M , L , XL , XXL ', 0, 'vêtements', 25, '', 19),
 (74, 'adidas Legging Optime Power black ', 'image-1700137506061-adidas Legging Optime Power black 1.webp,image-1700137506064-adidas Legging Optime Power black 2.webp,image-1700137506067-adidas Legging Optime Power black 3.webp,image-1700137506070-adidas Legging Optime Power black 5.webp', '', 'Femme', 'noir', 'XXS ,XS , S , M , L , XL , XXL ', 0, 'vêtements', 25, '', 20),
 (75, 'adidas Legging Optime Power ', 'image-1700137697509-adidas Legging Optime Power marron 1.webp,image-1700137697513-adidas Legging Optime Power marron 2.webp,image-1700137697521-adidas Legging Optime Power marron 3.webp,image-1700137697541-adidas Legging Optime Power marron 4.webp,image-1700137697545-adidas Legging Optime Power marron 5.webp', '', 'Femme', 'marron', 'XXS ,XS , S , M , L , XL , XXL ', 0, 'vêtements', 25, '', 10),
-(76, 'adidas Legging Optime Power', 'image-1700137804327-adidas Legging Optime Training 1.webp,image-1700137804329-adidas Legging Optime Training 2.webp,image-1700137804332-adidas Legging Optime Training 3.webp,image-1700137804338-adidas Legging Optime Training 4.webp', '', 'Femme', 'violet', 'XXS ,XS , S , M , L , XL , XXL ', 0, 'vêtements', 25, '', 24),
+(76, 'adidas Legging Optime Powerful', 'image-1700137804327-adidas Legging Optime Training 1.webp,image-1700137804329-adidas Legging Optime Training 2.webp,image-1700137804332-adidas Legging Optime Training 3.webp,image-1700137804338-adidas Legging Optime Training 4.webp', '', 'Femme', 'violet', 'XXS ,XS , S , M , L , XL , XXL ', 0, 'vêtements', 25, '', 24),
 (77, 'Camo Bra', 'image-1700137913494-Camo_Bra_Black_01_800x.webp,image-1700137913496-Camo_Bra_Black_02_800x Back.webp,image-1700137913504-Camo_Bra_Black_03_800x 3.webp,image-1700137913505-Camo_Bra_Black_04_800x 4.webp,image-1700137913511-Camo_Bra_Black_06_800x 5.webp', '', 'Femme', 'tigre', 'XXS ,XS , S , M , L , XL , XXL ', 0, 'vêtements', 46, '', 4),
 (78, 'Camo Bra', 'image-1700137981132-Camo_Bra_Green_01_800x.webp,image-1700137981132-Camo_Bra_Green_02_800x.webp,image-1700137981137-Camo_Bra_Green_03_800x 4.webp,image-1700137981139-Camo_Bra_Green_04_800x 3.webp,image-1700137981145-Camo_Bra_Green_06_800x 5.webp', '', 'Femme', 'tigre', 'XXS ,XS , S , M , L , XL , XXL   ', 0, 'vêtements', 46, '', 43),
 (79, 'Nike Training Pro Shine Tights ', 'image-1700138095411-Nike Training Pro Shine Tights 1.webp,image-1700138095414-Nike Training Pro Shine Tights 2.webp,image-1700138095416-Nike Training Pro Shine Tights 3.webp,image-1700138095420-Nike Training Pro Shine Tights 4.webp', '', 'Femme', 'noir', 'XXS ,XS , S , M , L , XL , XXL', 0, 'vêtements', 55, '', 21),
@@ -229,10 +250,13 @@ INSERT INTO `produits` (`id`, `nomProduit`, `images`, `description`, `categorie`
 (100, 'Nike T-shirt Fitness One Junior', 'image-1700147692403-Nike T-shirt Fitness One Junior  1.webp,image-1700147692408-Nike T-shirt Fitness One Junior 2.webp,image-1700147692412-Nike T-shirt Fitness One Junior 3.webp,image-1700147692419-Nike T-shirt Fitness One Junior 4.webp,image-1700147692425-Nike T-shirt Fitness One Junior 5.webp', '', 'Enfant', 'rose', '7-8 ,8-10 , 10-12 , 12-13 , 13-15 ', 0, 'vêtements', 28, '', 2),
 (102, 'Nike T-Shirt Miler Junior', 'image-1700147914266-Nike T-Shirt Miler Junior 1.webp,image-1700147914270-Nike T-Shirt Miler Junior 2.webp,image-1700147914273-Nike T-Shirt Miler Junior 3.webp,image-1700147914282-Nike T-Shirt Miler Junior 4.webp,image-1700147914284-Nike T-Shirt Miler Junior 5.webp', '', 'Enfant', 'bleu', '7-8 ,8-10 , 10-12 , 12-13 , 13-15 ', 0, 'vêtements', 22, '', 3),
 (103, 'Nike T-Shirt Miler Junior', 'image-1700148068694-Nike T-Shirt Miler noir Junior 1.webp,image-1700148068697-Nike T-Shirt Miler noir Junior 3.webp,image-1700148068699-Nike T-Shirt Miler noir Junior 4.webp,image-1700148068703-Nike T-Shirt Miler noir Junior 5.webp,image-1700148068705-Nike T-Shirt Miler noir Junior Back.webp', '', 'Enfant', 'noir', '7-8 ,8-10 , 10-12 , 12-13 , 13-15 ', 0, 'vêtements', 22, '', 20),
-(104, 'chaussures de trail running man', 'image-1700224285880-chaussures-de-trail-running-pour-man 1.jpg,image-1700224285887-chaussures-de-trail-running-pour-man 2.jpg,image-1700224285892-chaussures-de-trail-running-pour-man 3.jpg,image-1700224285899-chaussures-de-trail-running-pour-man 4.jpg,image-1700224285915-chaussures-de-trail-running-pour-man 5.jpg', '', 'Homme', 'gris', '39, 40 , 41 , 42 , 43 , 44 , 45 , 46', 0, 'chaussure', 120, '', 0),
 (180, 'chaussures de trail running man', 'image-1700227284457-chaussures-de-trail-running-man white 1.jpg,image-1700227284459-chaussures-de-trail-running-man white 3.jpg,image-1700227284463-chaussures-de-trail-running-man white 4.jpg,image-1700227284465-chaussures-de-trail-running-man white 5.jpg,image-1700227284468-chaussures-de-trail-running-man white Back.jpg', '', 'Homme', 'blanc', '39, 40 , 41 , 42 , 43 , 44 , 45 , 46', 0, 'chaussure', 110, '', 15),
 (181, 'Under Armour Haut Zippé Tech Homme', 'image-1701258049515-Under Armour Haut ZippÃ© Tech Homme vert 1.webp,image-1701258049519-Under Armour Haut ZippÃ© Tech Homme vert 2.webp,image-1701258049526-Under Armour Haut ZippÃ© Tech Homme vert 3.webp,image-1701258049527-Under Armour Haut ZippÃ© Tech Homme vert 4.webp,image-1701258049531-Under Armour Haut ZippÃ© Tech Homme vert 5.webp', '', 'Homme', 'vert', 'XXS ,XS , S , M , L , XL , XXL', 0, 'vetements', 45, '', 17),
-(185, 'Under Armour Haut Zippé Tech Homme', 'image-1708938960593-Under Armour Haut ZippÃ© Tech Homme 1.webp,image-1708938960596-Under Armour Haut ZippÃ© Tech Homme 2.webp,image-1708938960600-Under Armour Haut ZippÃ© Tech Homme 3.webp,image-1708938960601-Under Armour Haut ZippÃ© Tech Homme 4.webp,image-1708938960602-Under Armour Haut ZippÃ© Tech Homme 5.webp', '', 'Homme', 'orange', 'XXS ,XS , S , M , L , XL , XXL', 15, 'vêtements', 45, '', 0);
+(185, 'Under Armour Haut Zippé Tech Homme', 'image-1708938960593-Under Armour Haut ZippÃ© Tech Homme 1.webp,image-1708938960596-Under Armour Haut ZippÃ© Tech Homme 2.webp,image-1708938960600-Under Armour Haut ZippÃ© Tech Homme 3.webp,image-1708938960601-Under Armour Haut ZippÃ© Tech Homme 4.webp,image-1708938960602-Under Armour Haut ZippÃ© Tech Homme 5.webp', '', 'Homme', 'orange', 'XXS ,XS , S , M , L , XL , XXL', 15, 'vêtements', 45, '', 0),
+(190, 'zae', 'image-1713783015123-Asics GT 1000 junior 01.jpg,image-1713783015128-Asics GT 1000 junior 2.webp', 'eza', 'FD', 'ds', 'xs', 0, 'sdqf', 3, '', 0),
+(191, 'mom', 'image-1714990305157-Asics GT 1000 junior 01.jpg,image-1714990305163-Asics GT 1000 junior 2.webp,image-1714990305164-Asics GT 1000 junior 3.webp,image-1714990305165-Asics GT 1000 junior 4.webp,image-1714990305173-Asics GT 1000 junior 5.webp', 'sqdfg', 'Homme', 'rouge', 'xs', 10, 'vetements', 223, '', 0),
+(192, 'azer', '../sport/uploads/reebok-rush-runner-4 Front.png', 'aze', 'azef', 'z', 'ze', 12, 'dzef', 12, '', 0),
+(193, 'Camo Bra', '../sport/uploads/reebok-rush-runner-4 Front.png', 'camo est un etc', 'Femme', 'bleu', 'XS , S , M , XL', 0, 'vetements', 46, '', 0);
 
 -- --------------------------------------------------------
 
