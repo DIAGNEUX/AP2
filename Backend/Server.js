@@ -26,7 +26,7 @@ app.use('/uploads', express.static('../sport/uploads'));
 
 
 
-const defaultImagePath = 'image_default_image.jpg';
+const defaultImagePath = '../sport/uploads/reebok-rush-runner-4 Front.png';
 
 const fileFilter = (req, file, callback) => {
   if (file.mimetype.startsWith('image/')) {
@@ -70,13 +70,14 @@ app.use('/api/admin', adminRouter);
 
 app.post('/api/product', upload.array('images', 5), (req, res) => {
   try {
+    let imagePaths;
     if (!req.files || req.files.length === 0) {
-      return res.status(400).json({ error: 'No files uploaded.' });
+      imagePaths = defaultImagePath;
+    } else {
+      imagePaths = req.files.map((file) => file.filename).join(',');
     }
-
     const { nomProduit, description, categorie, couleur, taille, promo, cateType , prix } = req.body;
-    const imagePaths = req.files.map((file) => file.filename).join(',');
-
+  
     const sql = 'INSERT INTO produits (nomProduit, images, description, categorie, couleur, taille, promo, cateType , prix) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
     db.query(sql, [nomProduit, imagePaths, description, categorie, couleur, taille, promo, cateType, prix], (err, result) => {
       if (err) {
@@ -92,8 +93,6 @@ app.post('/api/product', upload.array('images', 5), (req, res) => {
     res.status(500).send('Internal Server Error');
   }
 });
-
-
 
 
 app.put('/api/product/:id', upload.array('images', 5), (req, res) => {
@@ -231,7 +230,7 @@ app.get('/api/user-history/:userId', async (req, res) => {
     res.status(500).send('Erreur lors de la récupération de l\'historique des commandes de l\'utilisateur');
   }
 });
-app.get('/api/admin-all-orders', isAdmin, async (req, res) => {
+app.get('/api/admin-all-orders', async (req, res) => {
   try {
     const allOrdersQuery = `
       SELECT 
@@ -363,7 +362,7 @@ app.post('/removeFromCart', async (req, res) => {
     res.status(500).send('Erreur lors de la suppression du produit du panier');
   }
 });
-// Écoute du port
+
 module.exports = app.listen(port, () => {
   console.log(`Server listening on port ${port}`);
 });
