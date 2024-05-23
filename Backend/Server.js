@@ -5,8 +5,8 @@ const db = require('./dbb/connexion');
 const cors = require('cors');
 const multer = require('multer');
 const bodyParser = require('body-parser');
-const cookieParser = require('cookie-parser');
-const isAdmin = require('./Middleware/middleware');
+
+// const isAdmin = require('./Middleware/middleware');
 
 const userRoutes = require('./Routes/UserRoutes'); 
 const productRouter = require('./Routes/ProductRoutes');
@@ -18,7 +18,7 @@ const adminRouter = require('./Routes/AdminRoutes');
 // };
 
 
-app.use(isAdmin);
+// app.use(isAdmin);
 app.use('/uploads', express.static('../sport/uploads'));
 
 
