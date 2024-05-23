@@ -1,25 +1,7 @@
-const express = require('express');
 const db = require('../dbb/connexion');
 const bcrypt = require('bcrypt');
-const cookieParser = require('cookie-parser');
-const isAdmin = require('../Middleware/middleware');
-const app = express();
-
-app.use(express.json());
-
-app.use(cookieParser());
 
 
-// exports.getUsers = (req, res) => {
-//   const sql = 'SELECT nom, prenom, email FROM user';
-//   db.query(sql, (err, data) => {
-//     if (err) {
-//       console.error('Erreur lors de la sélection des utilisateurs :', err);
-//       return res.status(500).json(err);
-//     }
-//     return res.json(data);
-//   });
-// };
 
 
 
