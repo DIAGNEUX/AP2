@@ -12,10 +12,7 @@ const userRoutes = require('./Routes/UserRoutes');
 const productRouter = require('./Routes/ProductRoutes');
 const panierRouter = require('./Routes/PanierRoutes');
 const adminRouter = require('./Routes/AdminRoutes');
-// const corsOptions = {
-//   origin: 'http://localhost:3000', // Remplacez ceci par l'URL de votre application frontend
-//   credentials: true, // Autoriser l'envoi de cookies
-// };
+
 
 app.use(express.json());
 app.use(cors());
