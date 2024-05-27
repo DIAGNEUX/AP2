@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1:3306
--- Généré le : jeu. 23 mai 2024 à 12:11
+-- Généré le : lun. 27 mai 2024 à 15:07
 -- Version du serveur : 8.0.31
 -- Version de PHP : 8.0.26
 
@@ -181,10 +181,10 @@ CREATE TABLE IF NOT EXISTS `produits` (
   `promo` int NOT NULL,
   `cateType` varchar(255) NOT NULL,
   `prix` float NOT NULL,
-  `best` varchar(255) NOT NULL,
-  `Quantité` int NOT NULL,
+  `best` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `Quantité` int DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=194 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=199 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Déchargement des données de la table `produits`
@@ -255,8 +255,12 @@ INSERT INTO `produits` (`id`, `nomProduit`, `images`, `description`, `categorie`
 (185, 'Under Armour Haut Zippé Tech Homme', 'image-1708938960593-Under Armour Haut ZippÃ© Tech Homme 1.webp,image-1708938960596-Under Armour Haut ZippÃ© Tech Homme 2.webp,image-1708938960600-Under Armour Haut ZippÃ© Tech Homme 3.webp,image-1708938960601-Under Armour Haut ZippÃ© Tech Homme 4.webp,image-1708938960602-Under Armour Haut ZippÃ© Tech Homme 5.webp', '', 'Homme', 'orange', 'XXS ,XS , S , M , L , XL , XXL', 15, 'vêtements', 45, '', 0),
 (190, 'zae', 'image-1713783015123-Asics GT 1000 junior 01.jpg,image-1713783015128-Asics GT 1000 junior 2.webp', 'eza', 'FD', 'ds', 'xs', 0, 'sdqf', 3, '', 0),
 (191, 'mom', 'image-1714990305157-Asics GT 1000 junior 01.jpg,image-1714990305163-Asics GT 1000 junior 2.webp,image-1714990305164-Asics GT 1000 junior 3.webp,image-1714990305165-Asics GT 1000 junior 4.webp,image-1714990305173-Asics GT 1000 junior 5.webp', 'sqdfg', 'Homme', 'rouge', 'xs', 10, 'vetements', 223, '', 0),
-(192, 'azer', '../sport/uploads/reebok-rush-runner-4 Front.png', 'aze', 'azef', 'z', 'ze', 12, 'dzef', 12, '', 0),
-(193, 'Camo Bra', '../sport/uploads/reebok-rush-runner-4 Front.png', 'camo est un etc', 'Femme', 'bleu', 'XS , S , M , XL', 0, 'vetements', 46, '', 0);
+(193, 'Camo Bra', '../sport/uploads/reebok-rush-runner-4 Front.png', 'camo est un etc', 'Femme', 'bleu', 'XS , S , M , XL', 0, 'vetements', 46, '', 0),
+(194, 'rety', 'image-1716813498094-Asics GT 1000 junior 01.jpg,image-1716813498098-Asics GT 1000 junior 2.webp', 'er', 'Homme', 'bleu', 'xs', 213, 'vetements', 123, '', 0),
+(195, 'erty', 'image-1716813589785-Asics GT 1000 junior 01.jpg', 'ret', 'Homme', 'bleu', 'xs', 300, 'vetements', 122, '', 0),
+(196, 'aazert', 'image-1716814114506-Asics GT 1000 junior 01.jpg', 'eza', 'Homme', 'bleu', 'xs', 12, 'vetements', 123, '', 0),
+(197, 'qzer', 'image-1716818375957-Asics GT 1000 junior 01.jpg', 'zde', 'Homme', 'bleu', 'xs', 12, 'vetements', 1234, '', 0),
+(198, 'alioiy', 'image-1716822104580-Asics GT 1000 junior 01.jpg', 'bghqsghj', 'Homme', 'bleu', 'xs', 10, 'vetements', 1243, NULL, NULL);
 
 -- --------------------------------------------------------
 
