@@ -30,7 +30,7 @@ export const Admin = () => {
   };
   const produitsAPI = "http://192.168.1.33:3001/api/admin/products";
   const usersAPI = "http://192.168.1.33:3001/api/admin/users";
-  const essaiAPI = "http://localhost:3001/api/products"
+  const essaiAPI = "http://192.168.1.33:3001/api/products"
 
 
   useEffect(() => {
@@ -72,7 +72,7 @@ export const Admin = () => {
       }
 
 
-      await axios.post( 'http://192.168.1.33:3001/api/product', formData);
+      await axios.post( 'http:/:192.168.1.33:3001/product', formData);
       setOverlayVisible(false);
       window.location.reload()
     } catch (error) {
