@@ -72,7 +72,7 @@ export const Admin = () => {
       }
 
 
-      await axios.post( 'http:/:192.168.1.33:3001/product', formData);
+      await axios.post( 'http://192.168.1.33:3001/api/product', formData);
       setOverlayVisible(false);
       window.location.reload()
     } catch (error) {
