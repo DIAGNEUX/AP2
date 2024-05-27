@@ -30,6 +30,7 @@ export const Admin = () => {
   };
   const produitsAPI = "http://192.168.1.33:3001/api/admin/products";
   const usersAPI = "http://192.168.1.33:3001/api/admin/users";
+  const essaiAPI = "http://localhost:3001/api/products"
 
 
   useEffect(() => {
@@ -81,7 +82,7 @@ export const Admin = () => {
 
   const handleDelete = async (productId) => {
     try {
-      await axios.delete(`${produitsAPI}/${productId}`);
+      await axios.delete(`${essaiAPI}/${productId}`);
       setProduits((prevProducts) => prevProducts.filter((product) => product.id !== productId));
     } catch (error) {
       console.error('Error:', error);
