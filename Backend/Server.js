@@ -271,7 +271,7 @@ app.get('/api/admin-all-orders', async (req, res) => {
 app.post('/getProducts', async (req, res) => {
   try {
     const cart = req.body.cart;
-    const getProductsQuery = 'SELECT id, nomProduit, prix, images, Quantité FROM produits WHERE id IN (?)';
+    const getProductsQuery = 'SELECT id, nomProduit, prix, images, Quantite FROM produits WHERE id IN (?)';
     const productIds = cart.map(item => item.produit_id);
 
     const getProductsResult = await new Promise((resolve, reject) => {
@@ -341,7 +341,6 @@ app.post('/removeFromCart', async (req, res) => {
   const { utilisateur_id, produit_id } = req.body;
 
   try {
-    // Effectuez la suppression du produit du panier dans la base de données
     const removeFromCartQuery = 'DELETE FROM panier WHERE utilisateur_id = ? AND produit_id = ?';
     await new Promise((resolve, reject) => {
       db.query(removeFromCartQuery, [utilisateur_id, produit_id], (removeErr, removeResult) => {

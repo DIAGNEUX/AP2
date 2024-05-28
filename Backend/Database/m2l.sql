@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1:3306
--- Généré le : lun. 27 mai 2024 à 15:07
+-- Généré le : mar. 28 mai 2024 à 13:06
 -- Version du serveur : 8.0.31
 -- Version de PHP : 8.0.26
 
@@ -182,7 +182,7 @@ CREATE TABLE IF NOT EXISTS `produits` (
   `cateType` varchar(255) NOT NULL,
   `prix` float NOT NULL,
   `best` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `Quantité` int DEFAULT NULL,
+  `Quantite` int DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=199 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
@@ -190,7 +190,7 @@ CREATE TABLE IF NOT EXISTS `produits` (
 -- Déchargement des données de la table `produits`
 --
 
-INSERT INTO `produits` (`id`, `nomProduit`, `images`, `description`, `categorie`, `couleur`, `taille`, `promo`, `cateType`, `prix`, `best`, `Quantité`) VALUES
+INSERT INTO `produits` (`id`, `nomProduit`, `images`, `description`, `categorie`, `couleur`, `taille`, `promo`, `cateType`, `prix`, `best`, `Quantite`) VALUES
 (2, 'Nike Short Challenger 7', 'image-1713795277045-image-1700145953512-Nike Short Challenger 7 orange  Homme 1.webp,image-1713795277050-image-1700145953515-Nike Short Challenger 7 orange  Homme 2.webp,image-1713795277053-image-1700145953519-Nike Short Challenger 7 orange  Homme 3.webp,image-1713795277058-image-1700145953528-Nike Short Challenger 7 orange  Homme 4.webp', '', '', '', '', 0, '', 0, 'best', 22),
 (35, 'Crampon', 'image-1700228959660-chaussure-copa-pure3-terrain-souple 1.jpg,image-1700228959661-chaussure-copa-pure3-terrain-souple 3.jpg,image-1700228959664-chaussure-copa-pure3-terrain-souple 4.jpg,image-1700228959669-chaussure-copa-pure3-terrain-souple 5.jpg,image-1700228959674-chaussure-copa-pure3-terrain-souple Back.jpg', '', '', '', '', 0, '', 0, '', 20),
 (36, '', 'image-1700229804928-chaussures-de-football-enfant-a-scratch-160-easy-agfg-rouge 1.jpg,image-1700229804932-chaussures-de-football-enfant-a-scratch-160-easy-agfg-rouge 3.jpg,image-1700229804950-chaussures-de-football-enfant-a-scratch-160-easy-agfg-rouge 4.jpg,image-1700229804974-chaussures-de-football-enfant-a-scratch-160-easy-agfg-rouge 5.jpg,image-1700229805005-chaussures-de-football-enfant-a-scratch-160-easy-agfg-rouge Back.jpg', '', '', '', '', 0, '', 0, '', 15),

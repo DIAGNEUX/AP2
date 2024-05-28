@@ -28,9 +28,9 @@ export const Admin = () => {
   const handleMenuClick = (menuItem) => {
     setSelectedMenuItem(menuItem);
   };
-  const produitsAPI = "http://localhost:3001/api/admin/products";
+  const produitsAPI = "http://192.168.1.33:3001/api/admin/products";
   const usersAPI = "http://192.168.1.33:3001/api/admin/users";
-  const essaiAPI = "http://localhost:3001/api/products"
+  const essaiAPI = "http://192.168.1.33:3001/api/products"
 
 
   useEffect(() => {
@@ -72,7 +72,7 @@ export const Admin = () => {
       }
 
 
-      await axios.post( 'http://localhost:3001/api/product', formData);
+      await axios.post( 'http://192.168.1.33:3001/api/product', formData);
       setOverlayVisible(false);
       window.location.reload()
     } catch (error) {
@@ -201,7 +201,7 @@ export const Admin = () => {
                   <div className="table-data">{unproduit.nomProduit}</div>
                   <div className="table-data">{unproduit.promo}</div>
                   <div className="table-data">{unproduit.prix}.00 €</div>
-                  <div className="table-data">{unproduit.Quantité}</div>
+                  <div className="table-data">{unproduit.Quantite}</div>
                   <div className="table-data">
                     <button onClick={() => handleEdit(unproduit.id)}><img src={modif} alt="" /></button>
                     <button onClick={() => handleDelete(unproduit.id)}><img src={sup} alt="" /></button>
