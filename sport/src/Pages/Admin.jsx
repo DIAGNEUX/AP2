@@ -9,7 +9,7 @@ import utilisateur from "../Assets/icons/icons8-utilisateur-50.png"
 import produit from "../Assets/icons/icons8-produit-50.png"
 import commande from "../Assets/icons/icons8-ordre-d'achat-50.png"
 export const Admin = () => {
-  const localhost = "http://192.168.1.33:3001";
+  const localhost = "http://localhost:3001";
   const [nom, setNom] = useState('');
   const [description, setDescription] = useState('');
   const [couleur, setCouleur] = useState('');
@@ -28,9 +28,9 @@ export const Admin = () => {
   const handleMenuClick = (menuItem) => {
     setSelectedMenuItem(menuItem);
   };
-  const produitsAPI = "http://192.168.1.33:3001/api/admin/products";
-  const usersAPI = "http://192.168.1.33:3001/api/admin/users";
-  const essaiAPI = "http://192.168.1.33:3001/api/products"
+  const produitsAPI = "http://localhost:3001/api/admin/products";
+  const usersAPI = "http://localhost:3001/api/admin/users";
+  const essaiAPI = "http://localhost:3001/api/products"
 
 
   useEffect(() => {
@@ -72,7 +72,7 @@ export const Admin = () => {
       }
 
 
-      await axios.post( 'http://192.168.1.33:3001/api/product', formData);
+      await axios.post( 'http://localhost:3001/api/product', formData);
       setOverlayVisible(false);
       window.location.reload()
     } catch (error) {
@@ -142,7 +142,7 @@ export const Admin = () => {
         taille: taille,
         images: images,
       });
-      await axios.put(`http://192.168.1.33:3001/api/product/${editingProduct.id}`, formData);
+      await axios.put(`http://localhost:3001/api/product/${editingProduct.id}`, formData);
 
   
       setProduits((prevProducts) =>

@@ -15,13 +15,13 @@ export const CartProvider = ({ children }) => {
         return;
       }
 
-      const cartResponse = await axios.get(`http://192.168.1.33:3001/getCart?utilisateur_id=${userId}`);
+      const cartResponse = await axios.get(`http://localhost:3001/getCart?utilisateur_id=${userId}`);
       console.log('Cart Response:', cartResponse.data); 
   
       if (cartResponse.status === 200) {
         const updatedCart = cartResponse.data;
       
-        const productsResponse = await axios.post('http://192.168.1.33:3001/getProducts', { cart: updatedCart });
+        const productsResponse = await axios.post('http://localhost:3001/getProducts', { cart: updatedCart });
   
         if (productsResponse.status === 200) {
           const cartWithDetails = productsResponse.data;
@@ -71,17 +71,17 @@ export const CartProvider = ({ children }) => {
         return;
       }
   
-      const response = await axios.post('http://192.168.1.33:3001/api/cart', {
+      const response = await axios.post('http://localhost:3001/api/cart', {
         utilisateur_id: userId,
         produit_id: product.id,
       });
   
       if (response.status === 200) {
-        const cartResponse = await axios.get(`http://192.168.1.33:3001/api/cart?utilisateur_id=${userId}`);
+        const cartResponse = await axios.get(`http://localhost:3001/api/cart?utilisateur_id=${userId}`);
   
         if (cartResponse.status === 200) {
           const updatedCart = cartResponse.data;
-          const detailedCart = await axios.post('http://192.168.1.33:3001/getProducts', { cart: updatedCart });
+          const detailedCart = await axios.post('http://localhost:3001/getProducts', { cart: updatedCart });
           setCart(detailedCart.data);
         }
       }
@@ -93,14 +93,14 @@ export const CartProvider = ({ children }) => {
   const removeFromCart = async (productId) => {
     try {
       const userId = Cookies.get('iduser');
-      const response = await axios.post('http://192.168.1.33:3001/removeFromCart', {
+      const response = await axios.post('http://localhost:3001/removeFromCart', {
         utilisateur_id: userId,
         produit_id: productId,
       });
   
       if (response.status === 200) {
-        const updatedCart = await axios.get(`http://192.168.1.33:3001/api/cart/${userId}`);
-        const detailedCart = await axios.post('http://192.168.1.33:3001/getProducts', { cart: updatedCart.data });
+        const updatedCart = await axios.get(`http://localhost:3001/api/cart/${userId}`);
+        const detailedCart = await axios.post('http://localhost:3001/getProducts', { cart: updatedCart.data });
         setCart(detailedCart.data);
       } else {
         console.error('Erreur lors de la suppression du produit du panier:', response.data.message);
@@ -114,7 +114,7 @@ export const CartProvider = ({ children }) => {
   const updateCartItemQuantity = async (productId, quantity) => {
     try {
       const userId = Cookies.get('iduser');
-      const response = await axios.post('http://192.168.1.33:3001/updateCartItemQuantity', {
+      const response = await axios.post('http://localhost:3001/updateCartItemQuantity', {
         utilisateur_id: userId,
         produit_id: productId,
         quantity,

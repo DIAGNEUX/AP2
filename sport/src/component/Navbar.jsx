@@ -23,7 +23,7 @@ import {
   const [sticky , setSticky]= useState(false)
   const [showPanier, setShowPanier] = useState(false);
   const [showLike , setShowLike ] = useState(false)
-  const localhost = "http://192.168.1.33:3001"
+  const localhost = "http://localhost:3001"
 
   const { isLoggedIn, logout } = useCart(); 
   const [userRole, setUserRole] = useState('');
